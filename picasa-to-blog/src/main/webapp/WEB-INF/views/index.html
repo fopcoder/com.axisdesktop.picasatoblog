@@ -7,6 +7,14 @@
     
     <div style="width:1200px; margin: 0 auto">
     
+    <ul>
+    <li>Wildfly + nginx</li>
+    <li>Bootstrap, CKEditor</li>
+    <li>SpringMVC, JAXB, Thymeleaf, Maven</li>
+    <li><a href="https://picasaweb.google.com/data/feed/base/user/116527897062235241340/albumid/6025993287193499489?alt=rss&amp;kind=photo&amp;hl=uk" target="sampleurl">example</a></li>
+    </ul>
+    <div th:if="${globalError}" th:text="${globalError}"></div>
+    
         <form role="form" th:action="@{/getrss}" method="POST" th:object="${picasaForm}">
 	        <div class="form-group">
 	        	<label for="url">RSS URL альбома</label>
@@ -31,6 +39,9 @@
         </form>
         
         <form>
+        <textarea th:if="${urlContent}" th:text="${urlContent}" style="width:100%;height:300px"></textarea>
+        
+        
             <textarea name="editor" id="editor" rows="10" cols="80">
                 This is my textarea to be replaced with CKEditor.
             </textarea>   

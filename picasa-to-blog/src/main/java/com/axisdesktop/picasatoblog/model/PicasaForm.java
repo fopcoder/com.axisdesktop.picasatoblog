@@ -6,7 +6,7 @@ import javax.validation.constraints.Size;
 
 public class PicasaForm {
 	@NotNull
-	@Size( min = 10 )
+	@Size( min = 5, max = 200 )
 	private String url;
 
 	private String alt;
