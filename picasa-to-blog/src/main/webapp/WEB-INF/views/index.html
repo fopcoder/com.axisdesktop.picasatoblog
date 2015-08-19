@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org">
+    <head>
+		<meta th:replace="include/meta" />
+    </head>
+    <body>
+    
+    <div style="width:1200px; margin: 0 auto">
+    
+        <form role="form" th:action="@{/getrss}" method="POST" th:object="${picasaForm}">
+	        <div class="form-group">
+	        	<label for="url">RSS URL альбома</label>
+	        	<input type="text" name="url" id="url" class="form-control" th:field="*{url}" />
+	        	<span th:if="${#fields.hasErrors('url')}" th:errors="*{url}"></span>
+	        </div>
+	        <div class="form-group">
+	        	<label for="alt">ALT текст</label>
+	        	<input type="text" name="alt" id="alt" class="form-control" th:field="*{alt}"  />
+	        </div>
+	        <div class="form-group">
+	        	<label for="width">MAX ширина картинки</label>
+	        	<input type="number" name="width" id="width" class="form-control" th:field="*{width}"  />
+	        	<span th:if="${#fields.hasErrors('width')}" th:errors="*{width}"></span>
+	        </div>
+	        <div class="form-group">
+	        	<label for="height">MAX высота картинки</label>
+	        	<input type="number" name="height" id="height" class="form-control" th:field="*{height}"  />
+	        	<span th:if="${#fields.hasErrors('height')}" th:errors="*{height}"></span>
+	        </div>
+	        <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+        
+        <form>
+            <textarea name="editor" id="editor" rows="10" cols="80">
+                This is my textarea to be replaced with CKEditor.
+            </textarea>   
+        </form>
+      </div>  
+         <script>
+            CKEDITOR.config.toolbarGroups = [
+            		{ name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
+            		{ name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
+            		{ name: 'forms', groups: [ 'forms' ] },
+            		{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+            		{ name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
+            		{ name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
+            		{ name: 'links', groups: [ 'links' ] },
+            		{ name: 'insert', groups: [ 'insert' ] },
+            		{ name: 'styles', groups: [ 'styles' ] },
+            		{ name: 'colors', groups: [ 'colors' ] },
+            		{ name: 'tools', groups: [ 'tools' ] },
+            		{ name: 'others', groups: [ 'others' ] },
+            		{ name: 'about', groups: [ 'about' ] } 
+            	];
+            	CKEDITOR.config.removeButtons = 'Save,Templates,NewPage,Preview,Print,Find,Replace,SelectAll,Scayt,Form,Checkbox,Radio,TextField,Textarea,Select,ImageButton,Button,HiddenField,Subscript,Superscript,Language,BidiLtr,BidiRtl,About,Styles,Format,Font,FontSize,Flash,Smiley,SpecialChar,PageBreak,Iframe,TextColor,BGColor,Maximize,ShowBlocks,Blockquote,CreateDiv,Outdent,Indent,BulletedList,NumberedList,JustifyLeft,JustifyCenter,JustifyRight,JustifyBlock,HorizontalRule';
+            
+                CKEDITOR.replace( 'editor' );
+            </script>
+        
+        
+    </body>
+</html>
