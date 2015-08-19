@@ -1,4 +1,4 @@
-package com.axisdeskop.picasatoblog.model;
+package com.axisdesktop.picasatoblog.model;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;

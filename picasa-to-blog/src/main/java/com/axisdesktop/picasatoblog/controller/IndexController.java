@@ -8,7 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.axisdeskop.picasatoblog.model.PicasaForm;
+import com.axisdesktop.picasatoblog.model.PicasaForm;
 
 @Controller
 public class IndexController {
