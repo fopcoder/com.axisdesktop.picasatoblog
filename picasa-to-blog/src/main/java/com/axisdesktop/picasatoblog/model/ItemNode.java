@@ -2,17 +2,13 @@ package com.axisdesktop.picasatoblog.model;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement( name = "item" )
 @XmlAccessorType( XmlAccessType.FIELD )
-public class ItemXml {
-	@XmlElement
+public class ItemNode {
 	private String link;
-
-	@XmlElement
-	private MediaXml group;
+	private GroupNode group;
 
 	public String getLink() {
 		return link;
@@ -22,12 +18,11 @@ public class ItemXml {
 		this.link = link;
 	}
 
-	public MediaXml getGroup() {
+	public GroupNode getGroup() {
 		return group;
 	}
 
-	public void setGroup( MediaXml group ) {
+	public void setGroup( GroupNode group ) {
 		this.group = group;
 	}
-
 }

@@ -9,13 +9,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement( name = "channel" )
 @XmlAccessorType( XmlAccessType.FIELD )
-public class ChannelXml {
-
-	@XmlElement
+public class ChannelNode {
 	private String title;
 
 	@XmlElement( name = "item" )
-	private List<ItemXml> items;
+	private List<ItemNode> items;
 
 	public String getTitle() {
 		return title;
@@ -25,12 +23,11 @@ public class ChannelXml {
 		this.title = title;
 	}
 
-	public List<ItemXml> getItems() {
+	public List<ItemNode> getItems() {
 		return items;
 	}
 
-	public void setItems( List<ItemXml> items ) {
+	public void setItems( List<ItemNode> items ) {
 		this.items = items;
 	}
-
 }

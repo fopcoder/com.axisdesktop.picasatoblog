@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.validation.Valid;
 import javax.xml.bind.JAXBContext;
@@ -19,9 +21,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.axisdesktop.picasatoblog.model.ItemXml;
+import com.axisdesktop.picasatoblog.model.BlogImage;
+import com.axisdesktop.picasatoblog.model.ContentNode;
+import com.axisdesktop.picasatoblog.model.ItemNode;
 import com.axisdesktop.picasatoblog.model.PicasaForm;
-import com.axisdesktop.picasatoblog.model.RssXml;
+import com.axisdesktop.picasatoblog.model.RssNode;
 
 @Controller
 public class IndexController {
@@ -32,8 +36,7 @@ public class IndexController {
 	}
 
 	@RequestMapping( value = "/getrss", method = RequestMethod.POST )
-	public String getRss( @Valid PicasaForm picasaForm,
-			BindingResult bindingResult, Model model,
+	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model,
 			RedirectAttributes redirectAttr ) {
 		if( bindingResult.hasErrors() ) {
 			return "index";
@@ -47,8 +50,7 @@ public class IndexController {
 			StringBuilder res = new StringBuilder();
 			URL url = new URL( picasaForm.getUrl() );
 
-			try( BufferedReader br = new BufferedReader( new InputStreamReader(
-					url.openStream() ) ) ) {
+			try( BufferedReader br = new BufferedReader( new InputStreamReader( url.openStream() ) ) ) {
 				String inputLine;
 
 				while( ( inputLine = br.readLine() ) != null ) {
@@ -58,21 +60,34 @@ public class IndexController {
 				content = res.toString();
 			}
 
-			JAXBContext jaxbCtx = JAXBContext.newInstance( RssXml.class );
+			JAXBContext jaxbCtx = JAXBContext.newInstance( RssNode.class );
 			Unmarshaller unmarshaller = jaxbCtx.createUnmarshaller();
-			RssXml xmlData = (RssXml)unmarshaller.unmarshal( new StringReader(
-					content ) );
+			RssNode xmlData = (RssNode)unmarshaller.unmarshal( new StringReader( content ) );
 
-			for( ItemXml i : xmlData.getChannel().getItems() ) {
-				System.err.println( "=====> " + i.getGroup().getContent() );
+			List<BlogImage> images = new ArrayList<>();
+
+			for( ItemNode i : xmlData.getChannel().getItems() ) {
+				ContentNode node = i.getGroup().getContent();
+				String newUrl;
+
+				if( node.getWidth() > node.getHeight() ) {
+					newUrl = "w" + picasaForm.getWidth();
+				}
+				else {
+					newUrl = "h" + picasaForm.getHeight();
+				}
+
+				int idx = node.getUrl().lastIndexOf( "/" );
+				newUrl = node.getUrl().substring( 0, idx + 1 ) + newUrl + node.getUrl().substring( idx );
+
+				images.add( new BlogImage( node.getWidth(), node.getHeight(), newUrl, picasaForm.getAlt() ) );
 			}
 
+			redirectAttr.addFlashAttribute( "images", images );
 		}
 		catch( MalformedURLException e ) {
-			System.err
-					.println( "MalformedURLException: " + picasaForm.getUrl() );
-			model.addAttribute( "globalError", "MalformedURLException: "
-					+ picasaForm.getUrl() );
+			System.err.println( "MalformedURLException: " + picasaForm.getUrl() );
+			model.addAttribute( "globalError", "MalformedURLException: " + picasaForm.getUrl() );
 			return "index";
 		}
 		catch( JAXBException e ) {
