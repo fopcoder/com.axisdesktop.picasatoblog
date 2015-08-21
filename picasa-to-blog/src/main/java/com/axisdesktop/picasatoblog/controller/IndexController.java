@@ -1,19 +1,19 @@
 package com.axisdesktop.picasatoblog.controller;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
+import javax.servlet.ServletContext;
 import javax.validation.Valid;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -29,14 +29,20 @@ import com.axisdesktop.picasatoblog.model.RssNode;
 
 @Controller
 public class IndexController {
+
+	@Autowired
+	private ServletContext servletContext;
+
 	@RequestMapping( "/" )
 	public String index( PicasaForm picasaForm, Model model ) {
-		// model.addAttribute( "form", form );
+		getVersion();
+
 		return "index";
 	}
 
 	@RequestMapping( value = "/getrss", method = RequestMethod.POST )
-	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model,
+	public String getRss( @Valid PicasaForm picasaForm,
+			BindingResult bindingResult, Model model,
 			RedirectAttributes redirectAttr ) {
 		if( bindingResult.hasErrors() ) {
 			return "index";
@@ -44,63 +50,74 @@ public class IndexController {
 
 		redirectAttr.addFlashAttribute( "picasaForm", picasaForm );
 
-		String content = null;
-
 		try {
-			StringBuilder res = new StringBuilder();
-			URL url = new URL( picasaForm.getUrl() );
-
-			try( BufferedReader br = new BufferedReader( new InputStreamReader( url.openStream() ) ) ) {
-				String inputLine;
-
-				while( ( inputLine = br.readLine() ) != null ) {
-					res.append( inputLine );
-				}
-
-				content = res.toString();
-			}
-
-			JAXBContext jaxbCtx = JAXBContext.newInstance( RssNode.class );
-			Unmarshaller unmarshaller = jaxbCtx.createUnmarshaller();
-			RssNode xmlData = (RssNode)unmarshaller.unmarshal( new StringReader( content ) );
-
-			List<BlogImage> images = new ArrayList<>();
-
-			for( ItemNode i : xmlData.getChannel().getItems() ) {
-				ContentNode node = i.getGroup().getContent();
-				String newUrl;
-
-				if( node.getWidth() > node.getHeight() ) {
-					newUrl = "w" + picasaForm.getWidth();
-				}
-				else {
-					newUrl = "h" + picasaForm.getHeight();
-				}
-
-				int idx = node.getUrl().lastIndexOf( "/" );
-				newUrl = node.getUrl().substring( 0, idx + 1 ) + newUrl + node.getUrl().substring( idx );
-
-				images.add( new BlogImage( node.getWidth(), node.getHeight(), newUrl, picasaForm.getAlt() ) );
-			}
-
+			List<BlogImage> images = urlToImageList( picasaForm );
 			redirectAttr.addFlashAttribute( "images", images );
 		}
 		catch( MalformedURLException e ) {
-			System.err.println( "MalformedURLException: " + picasaForm.getUrl() );
-			model.addAttribute( "globalError", "MalformedURLException: " + picasaForm.getUrl() );
+			System.err
+					.println( "MalformedURLException: " + picasaForm.getUrl() );
+			model.addAttribute( "globalError", "MalformedURLException: "
+					+ picasaForm.getUrl() );
 			return "index";
 		}
 		catch( JAXBException e ) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch( IOException e ) {
-			System.err.println( "IOException: " + e );
-			model.addAttribute( "globalError", "IOException: " + e );
+			model.addAttribute( "globalError", "JAXBException: " + e );
 			return "index";
 		}
 
-		redirectAttr.addFlashAttribute( "urlContent", content );
 		return "redirect:/";
 	}
+
+	private List<BlogImage> urlToImageList( PicasaForm picasaForm )
+			throws JAXBException, MalformedURLException {
+		List<BlogImage> images = new ArrayList<>();
+		URL url = new URL( picasaForm.getUrl() );
+
+		JAXBContext jaxbCtx = JAXBContext.newInstance( RssNode.class );
+		Unmarshaller unmarshaller = jaxbCtx.createUnmarshaller();
+		RssNode xmlData = (RssNode)unmarshaller.unmarshal( url );
+
+		for( ItemNode i : xmlData.getChannel().getItems() ) {
+			ContentNode node = i.getGroup().getContent();
+			String newUrl;
+
+			if( node.getWidth() > node.getHeight() ) {
+				newUrl = "w" + picasaForm.getWidth();
+			}
+			else {
+				newUrl = "h" + picasaForm.getHeight();
+			}
+
+			int idx = node.getUrl().lastIndexOf( "/" );
+			newUrl = node.getUrl().substring( 0, idx + 1 ) + newUrl
+					+ node.getUrl().substring( idx );
+
+			images.add( new BlogImage( node.getWidth(), node.getHeight(),
+					newUrl, picasaForm.getAlt() ) );
+		}
+
+		return images;
+	}
+
+	private String getVersion() {
+		String version = getClass().getPackage().getImplementationVersion();
+
+		if( version == null ) {
+			Properties prop = new Properties();
+			try {
+				prop.load( servletContext
+						.getResourceAsStream( "/META-INF/MANIFEST.MF" ) );
+				version = prop.getProperty( "Implementation-Version" );
+			}
+			catch( IOException e ) {
+
+			}
+		}
+
+		System.err.println( "======>  " + version );
+
+		return version;
+	}
+
 }
