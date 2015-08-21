@@ -41,8 +41,7 @@ public class IndexController {
 	}
 
 	@RequestMapping( value = "/getrss", method = RequestMethod.POST )
-	public String getRss( @Valid PicasaForm picasaForm,
-			BindingResult bindingResult, Model model,
+	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model,
 			RedirectAttributes redirectAttr ) {
 		if( bindingResult.hasErrors() ) {
 			return "index";
@@ -55,10 +54,7 @@ public class IndexController {
 			redirectAttr.addFlashAttribute( "images", images );
 		}
 		catch( MalformedURLException e ) {
-			System.err
-					.println( "MalformedURLException: " + picasaForm.getUrl() );
-			model.addAttribute( "globalError", "MalformedURLException: "
-					+ picasaForm.getUrl() );
+			model.addAttribute( "globalError", "MalformedURLException: " + picasaForm.getUrl() );
 			return "index";
 		}
 		catch( JAXBException e ) {
@@ -69,8 +65,7 @@ public class IndexController {
 		return "redirect:/";
 	}
 
-	private List<BlogImage> urlToImageList( PicasaForm picasaForm )
-			throws JAXBException, MalformedURLException {
+	private List<BlogImage> urlToImageList( PicasaForm picasaForm ) throws JAXBException, MalformedURLException {
 		List<BlogImage> images = new ArrayList<>();
 		URL url = new URL( picasaForm.getUrl() );
 
@@ -79,22 +74,27 @@ public class IndexController {
 		RssNode xmlData = (RssNode)unmarshaller.unmarshal( url );
 
 		for( ItemNode i : xmlData.getChannel().getItems() ) {
-			ContentNode node = i.getGroup().getContent();
 			String newUrl;
+			int newWidth, newHeight;
+
+			ContentNode node = i.getGroup().getContent();
+			double k = 1.0 * node.getWidth() / node.getHeight();
 
 			if( node.getWidth() > node.getHeight() ) {
 				newUrl = "w" + picasaForm.getWidth();
+				newWidth = picasaForm.getWidth();
+				newHeight = (int)( picasaForm.getWidth() / k );
 			}
 			else {
 				newUrl = "h" + picasaForm.getHeight();
+				newHeight = picasaForm.getHeight();
+				newWidth = (int)( picasaForm.getHeight() * k );
 			}
 
 			int idx = node.getUrl().lastIndexOf( "/" );
-			newUrl = node.getUrl().substring( 0, idx + 1 ) + newUrl
-					+ node.getUrl().substring( idx );
+			newUrl = node.getUrl().substring( 0, idx + 1 ) + newUrl + node.getUrl().substring( idx );
 
-			images.add( new BlogImage( node.getWidth(), node.getHeight(),
-					newUrl, picasaForm.getAlt() ) );
+			images.add( new BlogImage( newWidth, newHeight, newUrl, picasaForm.getAlt() ) );
 		}
 
 		return images;
@@ -106,8 +106,7 @@ public class IndexController {
 		if( version == null ) {
 			Properties prop = new Properties();
 			try {
-				prop.load( servletContext
-						.getResourceAsStream( "/META-INF/MANIFEST.MF" ) );
+				prop.load( servletContext.getResourceAsStream( "/META-INF/MANIFEST.MF" ) );
 				version = prop.getProperty( "Implementation-Version" );
 			}
 			catch( IOException e ) {

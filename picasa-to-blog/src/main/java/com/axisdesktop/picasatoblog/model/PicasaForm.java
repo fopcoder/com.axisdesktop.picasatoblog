@@ -12,11 +12,11 @@ public class PicasaForm {
 	private String alt;
 
 	@NotNull
-	@Min( 640 )
+	@Min( 200 )
 	private int width = 1024;
 
 	@NotNull
-	@Min( 480 )
+	@Min( 200 )
 	private int height = 512;
 
 	public String getUrl() {

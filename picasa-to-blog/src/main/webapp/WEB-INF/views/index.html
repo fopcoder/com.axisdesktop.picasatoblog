@@ -4,41 +4,53 @@
 <meta th:replace="include/meta" />
 </head>
 <body>
-
-	<div style="width: 1200px; margin: 0 auto">
+	<div class="container">
+		
+		<h1 class="page-header">Picasa to blog <small>{ prepare your Picasa album to post to blog }</small></h1>
+			
+		<div th:if="${globalError}" th:text="${globalError}" class="alert alert-danger row"></div>
 
 		<div class="row">
-			<div class="col-sm-7">
-				<form role="form" th:action="@{/getrss}" method="POST"
-					th:object="${picasaForm}">
-					<div class="form-group">
-						<label for="url">RSS URL альбома</label> <input type="text"
-							name="url" id="url" class="form-control" th:field="*{url}" /> <span
-							th:if="${#fields.hasErrors('url')}" th:errors="*{url}"></span>
+			<div class="col-sm-8">
+				<form role="form" th:action="@{/getrss}" method="POST" th:object="${picasaForm}" class="form-horizontal">
+					<div class="form-group form-group-sm">
+						<label class="control-label col-sm-3" for="url">Album's RSS URL:</label> 
+						<div class="col-sm-9">
+							<input class="form-control" type="text" name="url" id="url" th:field="*{url}" /> 
+							<div class="alert alert-danger" th:if="${#fields.hasErrors('url')}" th:errors="*{url}"></div>
+						</div>
 					</div>
-					<div class="form-group">
-						<label for="alt">ALT текст</label> <input type="text" name="alt"
-							id="alt" class="form-control" th:field="*{alt}" />
+					<div class="form-group form-group-sm">
+						<label class="control-label col-sm-3" for="alt">ALT image attribute:</label>
+						<div class="col-sm-9">
+							<input class="form-control" type="text" name="alt" id="alt"  th:field="*{alt}" />
+						</div>
 					</div>
-					<div class="form-group">
-						<label for="width">MAX ширина картинки</label> <input
-							type="number" name="width" id="width" class="form-control"
-							th:field="*{width}" /> <span
-							th:if="${#fields.hasErrors('width')}" th:errors="*{width}"></span>
+					<div class="form-group form-group-sm">
+						<label class="control-label col-sm-3" for="width">Image max width:</label> 
+						<div class="col-sm-9">
+							<input class="form-control" type="number" name="width" id="width"  th:field="*{width}" /> 
+							<div class="alert alert-danger" th:if="${#fields.hasErrors('width')}" th:errors="*{width}"></div>
+						</div>
 					</div>
-					<div class="form-group">
-						<label for="height">MAX высота картинки</label> <input
-							type="number" name="height" id="height" class="form-control"
-							th:field="*{height}" /> <span
-							th:if="${#fields.hasErrors('height')}" th:errors="*{height}"></span>
+					<div class="form-group form-group-sm">
+						<label class="control-label col-sm-3" for="height">Image max height:</label>
+						<div class="col-sm-9">
+							<input class="form-control" type="number" name="height" id="height" th:field="*{height}" /> 
+							<div class="alert alert-danger" th:if="${#fields.hasErrors('height')}" th:errors="*{height}"></div>
+						</div>
 					</div>
-					<button type="submit" class="btn btn-default">Submit</button>
+					<div class="form-group form-group-sm">
+						<div class="text-center">
+							<button type="submit" class="btn btn-default">Submit</button>
+						</div>
+					</div>
 				</form>
 			</div>
-			<div class="col-sm-5">
+			<div class="col-sm-4 well well-lg">
 				<ul>
 					<li>Wildfly + nginx</li>
-					<li>Bootstrap, CKEditor</li>
+					<li>Bootstrap, CKEditor, JQuery</li>
 					<li>SpringMVC, JAXB, Thymeleaf, Maven</li>
 					<li><a
 						href="https://picasaweb.google.com/data/feed/base/user/116527897062235241340/albumid/6025993287193499489?alt=rss&amp;kind=photo&amp;hl=uk"
@@ -46,37 +58,15 @@
 				</ul>
 			</div>
 		</div>
-		
-		<div th:if="${globalError}" th:text="${globalError}"></div>
-		
-		<form>
-			<textarea name="editor" id="editor" rows="10" cols="80">
-                <img th:each="img : ${images}" th:src="${img.url}"
-					th:alt="${img.alt}" />
-            </textarea>
-		</form>
+
+		<div class="row" th:if="${images}">
+			<form>
+				<textarea name="editor" id="editor" rows="10" cols="80">
+	                <img th:each="img : ${images}"
+						th:attr="width=${img.width},height=${img.height},alt=${img.alt},src=${img.url}" />
+	            </textarea>
+			</form>
+		</div>
 	</div>
-	<script>
-            CKEDITOR.config.toolbarGroups = [
-            		{ name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
-            		{ name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
-            		{ name: 'forms', groups: [ 'forms' ] },
-            		{ name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-            		{ name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
-            		{ name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
-            		{ name: 'links', groups: [ 'links' ] },
-            		{ name: 'insert', groups: [ 'insert' ] },
-            		{ name: 'styles', groups: [ 'styles' ] },
-            		{ name: 'colors', groups: [ 'colors' ] },
-            		{ name: 'tools', groups: [ 'tools' ] },
-            		{ name: 'others', groups: [ 'others' ] },
-            		{ name: 'about', groups: [ 'about' ] } 
-            	];
-            	CKEDITOR.config.removeButtons = 'Save,Templates,NewPage,Preview,Print,Find,Replace,SelectAll,Scayt,Form,Checkbox,Radio,TextField,Textarea,Select,ImageButton,Button,HiddenField,Subscript,Superscript,Language,BidiLtr,BidiRtl,About,Styles,Format,Font,FontSize,Flash,Smiley,SpecialChar,PageBreak,Iframe,TextColor,BGColor,Maximize,ShowBlocks,Blockquote,CreateDiv,Outdent,Indent,BulletedList,NumberedList,JustifyLeft,JustifyCenter,JustifyRight,JustifyBlock,HorizontalRule';
-            
-                CKEDITOR.replace( 'editor' );
-            </script>
-
-
 </body>
 </html>
