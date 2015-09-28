@@ -1,13 +1,17 @@
 package com.axisdesktop.picasatoblog.controller;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -33,16 +37,36 @@ public class IndexController {
 	@Autowired
 	private ServletContext servletContext;
 
+	private final int COOKIE_MAX_AGE = 3600 * 24 * 365 * 10;
+
 	@RequestMapping( "/" )
-	public String index( PicasaForm picasaForm, Model model ) {
-		getVersion();
+	public String index( PicasaForm picasaForm, Model model,
+			HttpServletResponse response, HttpServletRequest request ) {
+		// getVersion();
+
+		Map<String, String> cookies = getCookies( request.getCookies() );
+
+		if( !cookies.containsKey( "visitor" ) ) {
+			Cookie c = new Cookie( "visitor", UUID.randomUUID().toString() );
+			c.setMaxAge( COOKIE_MAX_AGE );
+			response.addCookie( c );
+		}
+
+		if( cookies.containsKey( "w" ) ) {
+			picasaForm.setWidth( Integer.valueOf( cookies.get( "w" ) ) );
+		}
+
+		if( cookies.containsKey( "h" ) ) {
+			picasaForm.setHeight( Integer.valueOf( cookies.get( "h" ) ) );
+		}
 
 		return "index";
 	}
 
 	@RequestMapping( value = "/getrss", method = RequestMethod.POST )
-	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model,
-			RedirectAttributes redirectAttr ) {
+	public String getRss( @Valid PicasaForm picasaForm,
+			BindingResult bindingResult, Model model,
+			RedirectAttributes redirectAttr, HttpServletResponse response ) {
 		if( bindingResult.hasErrors() ) {
 			return "index";
 		}
@@ -52,9 +76,20 @@ public class IndexController {
 		try {
 			List<BlogImage> images = urlToImageList( picasaForm );
 			redirectAttr.addFlashAttribute( "images", images );
+
+			Cookie w = new Cookie( "w",
+					Integer.toString( picasaForm.getWidth() ) );
+			w.setMaxAge( COOKIE_MAX_AGE );
+			Cookie h = new Cookie( "h", Integer.toString( picasaForm
+					.getHeight() ) );
+			h.setMaxAge( COOKIE_MAX_AGE );
+
+			response.addCookie( w );
+			response.addCookie( h );
 		}
 		catch( MalformedURLException e ) {
-			model.addAttribute( "globalError", "MalformedURLException: " + picasaForm.getUrl() );
+			model.addAttribute( "globalError", "MalformedURLException: "
+					+ picasaForm.getUrl() );
 			return "index";
 		}
 		catch( JAXBException e ) {
@@ -65,7 +100,8 @@ public class IndexController {
 		return "redirect:/";
 	}
 
-	private List<BlogImage> urlToImageList( PicasaForm picasaForm ) throws JAXBException, MalformedURLException {
+	private List<BlogImage> urlToImageList( PicasaForm picasaForm )
+			throws JAXBException, MalformedURLException {
 		List<BlogImage> images = new ArrayList<>();
 		URL url = new URL( picasaForm.getUrl() );
 
@@ -92,31 +128,44 @@ public class IndexController {
 			}
 
 			int idx = node.getUrl().lastIndexOf( "/" );
-			newUrl = node.getUrl().substring( 0, idx + 1 ) + newUrl + node.getUrl().substring( idx );
+			newUrl = node.getUrl().substring( 0, idx + 1 ) + newUrl
+					+ node.getUrl().substring( idx );
 
-			images.add( new BlogImage( newWidth, newHeight, newUrl, picasaForm.getAlt() ) );
+			images.add( new BlogImage( newWidth, newHeight, newUrl, picasaForm
+					.getAlt() ) );
 		}
 
 		return images;
 	}
 
-	private String getVersion() {
-		String version = getClass().getPackage().getImplementationVersion();
+	private Map<String, String> getCookies( Cookie[] cookie ) {
+		Map<String, String> cm = new HashMap<>();
 
-		if( version == null ) {
-			Properties prop = new Properties();
-			try {
-				prop.load( servletContext.getResourceAsStream( "/META-INF/MANIFEST.MF" ) );
-				version = prop.getProperty( "Implementation-Version" );
-			}
-			catch( IOException e ) {
-
-			}
+		for( Cookie c : cookie ) {
+			cm.put( c.getName(), c.getValue() );
 		}
 
-		System.err.println( "======>  " + version );
-
-		return version;
+		return cm;
 	}
+
+	// private String getVersion() {
+	// String version = getClass().getPackage().getImplementationVersion();
+	//
+	// if( version == null ) {
+	// Properties prop = new Properties();
+	// try {
+	// prop.load( servletContext
+	// .getResourceAsStream( "/META-INF/MANIFEST.MF" ) );
+	// version = prop.getProperty( "Implementation-Version" );
+	// }
+	// catch( IOException e ) {
+	//
+	// }
+	// }
+	//
+	// System.err.println( "======>  " + version );
+	//
+	// return version;
+	// }
 
 }
