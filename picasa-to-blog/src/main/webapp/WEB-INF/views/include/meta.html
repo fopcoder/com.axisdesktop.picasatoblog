@@ -9,11 +9,10 @@
         
 <title>Picasa To Blog</title>
 
-<script th:src="@{/resources/ckeditor/ckeditor.js}"></script>
-<script th:src="@{/resources/jquery/jquery-1.11.3.min.js}"></script>
-<script th:src="@{/resources/bootstrap/js/bootstrap.min.js}" ></script>
+<script th:src="${devEnv} ? @{/resources/ckeditor/ckeditor.js} : @{~/resources/ckeditor/ckeditor.js}"></script>
+<script th:src="${devEnv} ? @{/resources/jquery/jquery-2.1.4.min.js} : @{~/resources/jquery/jquery-2.1.4.min.js}"></script>
 
-<link th:href="@{/resources/bootstrap/css/bootstrap.min.css}" rel="stylesheet" />
+<link th:href="${devEnv} ? @{/resources/bootstrap/css/bootstrap.min.css} :  @{~/resources/bootstrap/css/bootstrap.min.css}" rel="stylesheet" />
 
 <script>
 	$(document).ready(function (){
