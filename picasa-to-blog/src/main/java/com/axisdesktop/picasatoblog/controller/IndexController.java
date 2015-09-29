@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,6 +17,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -35,14 +35,12 @@ import com.axisdesktop.picasatoblog.model.RssNode;
 public class IndexController {
 
 	@Autowired
-	private ServletContext servletContext;
+	private Environment environment;
 
 	private final int COOKIE_MAX_AGE = 3600 * 24 * 365 * 10;
 
 	@RequestMapping( "/" )
 	public String index( PicasaForm picasaForm, Model model, HttpServletResponse response, HttpServletRequest request ) {
-		// getVersion();
-
 		Map<String, String> cookies = getCookies( request.getCookies() );
 
 		if( !cookies.containsKey( "visitor" ) ) {
@@ -64,7 +62,7 @@ public class IndexController {
 
 	@RequestMapping( value = "/getrss", method = RequestMethod.POST )
 	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model,
-			RedirectAttributes redirectAttr, HttpServletResponse response ) {
+			RedirectAttributes redirectAttr, HttpServletResponse response, HttpServletRequest request ) {
 		if( bindingResult.hasErrors() ) {
 			return "index";
 		}
@@ -92,7 +90,7 @@ public class IndexController {
 			return "index";
 		}
 
-		return "redirect:/";
+		return "redirect:" + composeIndexRedirectUrl( request );
 	}
 
 	private List<BlogImage> urlToImageList( PicasaForm picasaForm ) throws JAXBException, MalformedURLException {
@@ -140,24 +138,16 @@ public class IndexController {
 		return cm;
 	}
 
-	// private String getVersion() {
-	// String version = getClass().getPackage().getImplementationVersion();
-	//
-	// if( version == null ) {
-	// Properties prop = new Properties();
-	// try {
-	// prop.load( servletContext
-	// .getResourceAsStream( "/META-INF/MANIFEST.MF" ) );
-	// version = prop.getProperty( "Implementation-Version" );
-	// }
-	// catch( IOException e ) {
-	//
-	// }
-	// }
-	//
-	// System.err.println( "======>  " + version );
-	//
-	// return version;
-	// }
+	private String composeIndexRedirectUrl( HttpServletRequest request ) {
+		String url = null;
 
+		if( environment.getProperty( "spring.profiles.active" ).contains( "development" ) ) {
+			url = "/";
+		}
+		else {
+			url = "//" + request.getServerName();
+		}
+
+		return url;
+	}
 }

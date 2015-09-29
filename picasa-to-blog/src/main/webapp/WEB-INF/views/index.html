@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:with="devEnv = ${@environment.getProperty('spring.profiles.active').contains('development')}">
+<html xmlns:th="http://www.thymeleaf.org" th:with="devEnv = ${#arrays.contains(@environment.getActiveProfiles(),'development')}">
 <head>
 	<th:block th:include="include/meta :: meta" />
 </head>
