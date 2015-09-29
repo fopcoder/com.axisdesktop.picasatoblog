@@ -40,8 +40,7 @@ public class IndexController {
 	private final int COOKIE_MAX_AGE = 3600 * 24 * 365 * 10;
 
 	@RequestMapping( "/" )
-	public String index( PicasaForm picasaForm, Model model,
-			HttpServletResponse response, HttpServletRequest request ) {
+	public String index( PicasaForm picasaForm, Model model, HttpServletResponse response, HttpServletRequest request ) {
 		// getVersion();
 
 		Map<String, String> cookies = getCookies( request.getCookies() );
@@ -64,8 +63,7 @@ public class IndexController {
 	}
 
 	@RequestMapping( value = "/getrss", method = RequestMethod.POST )
-	public String getRss( @Valid PicasaForm picasaForm,
-			BindingResult bindingResult, Model model,
+	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model,
 			RedirectAttributes redirectAttr, HttpServletResponse response ) {
 		if( bindingResult.hasErrors() ) {
 			return "index";
@@ -77,19 +75,16 @@ public class IndexController {
 			List<BlogImage> images = urlToImageList( picasaForm );
 			redirectAttr.addFlashAttribute( "images", images );
 
-			Cookie w = new Cookie( "w",
-					Integer.toString( picasaForm.getWidth() ) );
+			Cookie w = new Cookie( "w", Integer.toString( picasaForm.getWidth() ) );
 			w.setMaxAge( COOKIE_MAX_AGE );
-			Cookie h = new Cookie( "h", Integer.toString( picasaForm
-					.getHeight() ) );
+			Cookie h = new Cookie( "h", Integer.toString( picasaForm.getHeight() ) );
 			h.setMaxAge( COOKIE_MAX_AGE );
 
 			response.addCookie( w );
 			response.addCookie( h );
 		}
 		catch( MalformedURLException e ) {
-			model.addAttribute( "globalError", "MalformedURLException: "
-					+ picasaForm.getUrl() );
+			model.addAttribute( "globalError", "MalformedURLException: " + picasaForm.getUrl() );
 			return "index";
 		}
 		catch( JAXBException e ) {
@@ -100,8 +95,7 @@ public class IndexController {
 		return "redirect:/";
 	}
 
-	private List<BlogImage> urlToImageList( PicasaForm picasaForm )
-			throws JAXBException, MalformedURLException {
+	private List<BlogImage> urlToImageList( PicasaForm picasaForm ) throws JAXBException, MalformedURLException {
 		List<BlogImage> images = new ArrayList<>();
 		URL url = new URL( picasaForm.getUrl() );
 
@@ -117,7 +111,7 @@ public class IndexController {
 			double k = 1.0 * node.getWidth() / node.getHeight();
 
 			if( node.getWidth() > node.getHeight() ) {
-				newUrl = "w" + picasaForm.getWidth();
+				newUrl = "s" + picasaForm.getWidth();
 				newWidth = picasaForm.getWidth();
 				newHeight = (int)( picasaForm.getWidth() / k );
 			}
@@ -128,11 +122,9 @@ public class IndexController {
 			}
 
 			int idx = node.getUrl().lastIndexOf( "/" );
-			newUrl = node.getUrl().substring( 0, idx + 1 ) + newUrl
-					+ node.getUrl().substring( idx );
+			newUrl = node.getUrl().substring( 0, idx + 1 ) + newUrl + node.getUrl().substring( idx );
 
-			images.add( new BlogImage( newWidth, newHeight, newUrl, picasaForm
-					.getAlt() ) );
+			images.add( new BlogImage( newWidth, newHeight, newUrl, picasaForm.getAlt() ) );
 		}
 
 		return images;
