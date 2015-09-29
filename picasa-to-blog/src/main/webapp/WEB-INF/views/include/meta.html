@@ -15,6 +15,7 @@
 <link th:href="${devEnv} ? @{/resources/bootstrap/css/bootstrap.min.css} :  @{~/resources/bootstrap/css/bootstrap.min.css}" rel="stylesheet" />
 
 <script>
+/*<![CDATA[*/
 	$(document).ready(function (){
 		if( $( '#editor' ).length )	{
 			CKEDITOR.config.toolbarGroups = [
@@ -34,12 +35,31 @@
 			];
 			CKEDITOR.config.removeButtons = 'Save,Templates,NewPage,Preview,Print,Find,Replace,SelectAll,Scayt,Form,Checkbox,Radio,TextField,Textarea,Select,ImageButton,Button,HiddenField,Subscript,Superscript,Language,BidiLtr,BidiRtl,About,Styles,Format,Font,FontSize,Flash,Smiley,SpecialChar,PageBreak,Iframe,TextColor,BGColor,Maximize,ShowBlocks,Blockquote,CreateDiv,Outdent,Indent,BulletedList,NumberedList,JustifyLeft,JustifyCenter,JustifyRight,JustifyBlock,HorizontalRule';
 			CKEDITOR.config.height = $(document).height()-70;
-			CKEDITOR.replace( 'editor' );
+			
+			CKEDITOR.replace( 'editor', {
+				on: {
+			        instanceReady: function( ev ) {
+			        	var blockTags = ['div','h1','h2','h3','h4','h5','h6','p','pre','ul','li','p','img'];
+			            
+			            for (var i=0; i<blockTags.length; i++) {
+							this.dataProcessor.writer.setRules( blockTags[i], {
+				                indent: false,
+				                breakBeforeOpen: true,
+				                breakAfterOpen: false,
+				                breakBeforeClose: false,
+				                breakAfterClose: true
+				            });
+						}
+			        }
+			    }
+			} );
+			
 		  	$('html, body').animate({
 			    scrollTop: $( '#editor' ).offset().top
 			}, 1000);
 		}
 	});
+/*]]>*/
 </script>
 
 </head>
