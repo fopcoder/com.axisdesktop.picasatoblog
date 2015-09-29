@@ -62,8 +62,10 @@
 		<div class="row" th:if="${images}">
 			<form>
 				<textarea name="editor" id="editor" rows="10" cols="80">
-	                <img th:each="img : ${images}"
-						th:attr="width=${img.width},height=${img.height},alt=${img.alt},src=${img.url}" />
+					<th:block th:each="img : ${images}">
+	                <img th:attr="width=${img.width},height=${img.height},alt=${img.alt},src=${img.url}" />
+	                
+					</th:block>
 	            </textarea>
 			</form>
 		</div>
