@@ -11,6 +11,7 @@ import java.util.UUID;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -45,9 +46,12 @@ public class IndexController {
 	private final String COOKIE_PATH = "/";
 
 	@RequestMapping( "/" )
-	public String index( PicasaForm picasaForm, Model model, HttpServletResponse response, HttpServletRequest request ) {
+	public String index( PicasaForm picasaForm, Model model, HttpServletResponse response, HttpServletRequest request,
+			HttpSession session ) {
 
 		Map<String, String> cookies = getCookies( request.getCookies() );
+
+		// System.out.println(session.);
 
 		if( !cookies.containsKey( "visitor" ) ) {
 			Cookie c = new Cookie( "visitor", UUID.randomUUID().toString() );
@@ -69,7 +73,8 @@ public class IndexController {
 	}
 
 	@RequestMapping( value = "/getrss", method = RequestMethod.POST )
-	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model, RedirectAttributes redirectAttr, HttpServletResponse response, HttpServletRequest request ) {
+	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model,
+			RedirectAttributes redirectAttr, HttpServletResponse response, HttpServletRequest request ) {
 		if( bindingResult.hasErrors() ) {
 			return "index";
 		}
@@ -142,7 +147,7 @@ public class IndexController {
 	 * Converts HTTP Cookies to HashMap<String, String>
 	 * 
 	 * @param cookie
-	 *            array of HttpServletRequest Cookies
+	 *        array of HttpServletRequest Cookies
 	 * @return HashMap<Key, Value>
 	 */
 	private Map<String, String> getCookies( Cookie[] cookie ) {
