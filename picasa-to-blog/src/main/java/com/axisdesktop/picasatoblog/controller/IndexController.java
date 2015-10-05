@@ -49,6 +49,8 @@ public class IndexController {
 
 		Map<String, String> cookies = getCookies( request.getCookies() );
 
+		//
+
 		if( !cookies.containsKey( "visitor" ) ) {
 			Cookie c = new Cookie( "visitor", UUID.randomUUID().toString() );
 			c.setMaxAge( COOKIE_MAX_AGE );
@@ -69,7 +71,8 @@ public class IndexController {
 	}
 
 	@RequestMapping( value = "/getrss", method = RequestMethod.POST )
-	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model, RedirectAttributes redirectAttr, HttpServletResponse response, HttpServletRequest request ) {
+	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model,
+			RedirectAttributes redirectAttr, HttpServletResponse response, HttpServletRequest request ) {
 		if( bindingResult.hasErrors() ) {
 			return "index";
 		}
@@ -142,7 +145,7 @@ public class IndexController {
 	 * Converts HTTP Cookies to HashMap<String, String>
 	 * 
 	 * @param cookie
-	 *            array of HttpServletRequest Cookies
+	 *        array of HttpServletRequest Cookies
 	 * @return HashMap<Key, Value>
 	 */
 	private Map<String, String> getCookies( Cookie[] cookie ) {
