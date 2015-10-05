@@ -31,6 +31,10 @@ import com.axisdesktop.picasatoblog.model.ItemNode;
 import com.axisdesktop.picasatoblog.model.PicasaForm;
 import com.axisdesktop.picasatoblog.model.RssNode;
 
+/**
+ * @author 1111
+ *
+ */
 @Controller
 public class IndexController {
 
@@ -38,14 +42,18 @@ public class IndexController {
 	private Environment environment;
 
 	private final int COOKIE_MAX_AGE = 3600 * 24 * 365 * 10;
+	private final String COOKIE_PATH = "/";
 
 	@RequestMapping( "/" )
 	public String index( PicasaForm picasaForm, Model model, HttpServletResponse response, HttpServletRequest request ) {
+
 		Map<String, String> cookies = getCookies( request.getCookies() );
 
 		if( !cookies.containsKey( "visitor" ) ) {
 			Cookie c = new Cookie( "visitor", UUID.randomUUID().toString() );
 			c.setMaxAge( COOKIE_MAX_AGE );
+			c.setPath( COOKIE_PATH );
+
 			response.addCookie( c );
 		}
 
@@ -61,8 +69,7 @@ public class IndexController {
 	}
 
 	@RequestMapping( value = "/getrss", method = RequestMethod.POST )
-	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model,
-			RedirectAttributes redirectAttr, HttpServletResponse response, HttpServletRequest request ) {
+	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model, RedirectAttributes redirectAttr, HttpServletResponse response, HttpServletRequest request ) {
 		if( bindingResult.hasErrors() ) {
 			return "index";
 		}
@@ -75,8 +82,11 @@ public class IndexController {
 
 			Cookie w = new Cookie( "w", Integer.toString( picasaForm.getWidth() ) );
 			w.setMaxAge( COOKIE_MAX_AGE );
+			w.setPath( COOKIE_PATH );
+
 			Cookie h = new Cookie( "h", Integer.toString( picasaForm.getHeight() ) );
 			h.setMaxAge( COOKIE_MAX_AGE );
+			h.setPath( COOKIE_PATH );
 
 			response.addCookie( w );
 			response.addCookie( h );
@@ -128,11 +138,20 @@ public class IndexController {
 		return images;
 	}
 
+	/**
+	 * Converts HTTP Cookies to HashMap<String, String>
+	 * 
+	 * @param cookie
+	 *            array of HttpServletRequest Cookies
+	 * @return HashMap<Key, Value>
+	 */
 	private Map<String, String> getCookies( Cookie[] cookie ) {
 		Map<String, String> cm = new HashMap<>();
 
-		for( Cookie c : cookie ) {
-			cm.put( c.getName(), c.getValue() );
+		if( cookie != null ) {
+			for( Cookie c : cookie ) {
+				cm.put( c.getName(), c.getValue() );
+			}
 		}
 
 		return cm;
@@ -145,7 +164,7 @@ public class IndexController {
 			url = "/";
 		}
 		else {
-			url = "//" + request.getServerName();
+			url = request.getScheme() + "://" + request.getServerName();
 		}
 
 		return url;
