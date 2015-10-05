@@ -52,6 +52,7 @@ public class IndexController {
 		Map<String, String> cookies = getCookies( request.getCookies() );
 
 		// System.out.println(session.);
+		// saefasdf
 
 		if( !cookies.containsKey( "visitor" ) ) {
 			Cookie c = new Cookie( "visitor", UUID.randomUUID().toString() );
