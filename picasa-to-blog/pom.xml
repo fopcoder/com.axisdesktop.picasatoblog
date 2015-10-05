@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.axisdesktop</groupId>
   <artifactId>picasa-to-blog</artifactId>
-  <version>1.0.3-RELEASE</version>
+  <version>1.0.5-RELEASE</version>
   <packaging>war</packaging>
   
   	<properties>
