@@ -1,5 +1,6 @@
 package com.axisdesktop.picasatoblog.model;
 
+//TODO javadoc
 public class BlogImage {
 	private int width;
 	private int height;

@@ -42,9 +42,10 @@ public class IndexController {
 	@Autowired
 	private Environment environment;
 
-	private final int COOKIE_MAX_AGE = 3600 * 24 * 365 * 10;
-	private final String COOKIE_PATH = "/";
+	private static final int COOKIE_MAX_AGE = 3600 * 24 * 365 * 10;
+	private static final String COOKIE_PATH = "/";
 
+	// TODO javadoc
 	@RequestMapping( "/" )
 	public String index( PicasaForm picasaForm, HttpServletResponse response, HttpServletRequest request ) {
 
@@ -73,9 +74,9 @@ public class IndexController {
 		return "index";
 	}
 
+	// TODO javadoc
 	@RequestMapping( value = "/getrss", method = RequestMethod.POST )
-	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model,
-			RedirectAttributes redirectAttr, HttpServletResponse response, HttpServletRequest request ) {
+	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model, RedirectAttributes redirectAttr, HttpServletResponse response, HttpServletRequest request ) {
 		if( bindingResult.hasErrors() ) {
 			return "index";
 		}
@@ -111,6 +112,7 @@ public class IndexController {
 		return "redirect:" + composeIndexRedirectUrl( request );
 	}
 
+	// TODO javadoc
 	private List<BlogImage> urlToImageList( PicasaForm picasaForm ) throws JAXBException, MalformedURLException {
 		List<BlogImage> images = new ArrayList<>();
 		URL url = new URL( picasaForm.getUrl() );
@@ -150,7 +152,7 @@ public class IndexController {
 	 * Converts HTTP Cookies to HashMap<String, String>
 	 * 
 	 * @param cookie
-	 *        array of HttpServletRequest Cookies
+	 *            array of HttpServletRequest Cookies
 	 * @return HashMap<Key, Value>
 	 */
 	private Map<String, String> getCookies( Cookie[] cookie ) {
@@ -166,10 +168,10 @@ public class IndexController {
 	}
 
 	/**
-	 * Composes String url for redirect after submit form
+	 * Composes String url for redirect after form submit
 	 * 
 	 * @param request
-	 *        HttpServletRequest
+	 *            HttpServletRequest
 	 * @return url as string
 	 */
 	private String composeIndexRedirectUrl( HttpServletRequest request ) {
