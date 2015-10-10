@@ -1,4 +1,4 @@
-package com.axisdesktop.picasatoblog.model;
+package com.axisdesktop.picasatoblog.picasarss;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

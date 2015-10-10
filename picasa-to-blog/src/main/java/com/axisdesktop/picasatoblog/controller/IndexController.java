@@ -1,6 +1,8 @@
 package com.axisdesktop.picasatoblog.controller;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +14,7 @@ import java.util.UUID;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 import javax.validation.Valid;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -19,6 +22,8 @@ import javax.xml.bind.Unmarshaller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -27,10 +32,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.axisdesktop.picasatoblog.model.BlogImage;
-import com.axisdesktop.picasatoblog.model.ContentNode;
-import com.axisdesktop.picasatoblog.model.ItemNode;
 import com.axisdesktop.picasatoblog.model.PicasaForm;
-import com.axisdesktop.picasatoblog.model.RssNode;
+import com.axisdesktop.picasatoblog.model.Record;
+import com.axisdesktop.picasatoblog.picasarss.ContentNode;
+import com.axisdesktop.picasatoblog.picasarss.ItemNode;
+import com.axisdesktop.picasatoblog.picasarss.RssNode;
 
 /**
  * @author 1111
@@ -41,6 +47,9 @@ public class IndexController {
 
 	@Autowired
 	private Environment environment;
+
+	@Autowired
+	private DataSource dataSource;
 
 	private static final int COOKIE_MAX_AGE = 3600 * 24 * 365 * 10;
 	private static final String COOKIE_PATH = "/";
@@ -76,7 +85,8 @@ public class IndexController {
 
 	// TODO javadoc
 	@RequestMapping( value = "/getrss", method = RequestMethod.POST )
-	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model, RedirectAttributes redirectAttr, HttpServletResponse response, HttpServletRequest request ) {
+	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model,
+			RedirectAttributes redirectAttr, HttpServletResponse response, HttpServletRequest request ) {
 		if( bindingResult.hasErrors() ) {
 			return "index";
 		}
@@ -84,7 +94,7 @@ public class IndexController {
 		redirectAttr.addFlashAttribute( "picasaForm", picasaForm );
 
 		try {
-			List<BlogImage> images = urlToImageList( picasaForm );
+			List<BlogImage> images = picasaRssToImageList( picasaForm );
 			redirectAttr.addFlashAttribute( "images", images );
 
 			Cookie w = new Cookie( "w", Integer.toString( picasaForm.getWidth() ) );
@@ -97,6 +107,17 @@ public class IndexController {
 
 			response.addCookie( w );
 			response.addCookie( h );
+
+			Record rec = new Record();
+			picasaRssGetUrlParams( picasaForm.getUrl(), rec );
+			rec.setIp( getIpAddress( request ) );
+			rec.setAlt( picasaForm.getAlt() );
+
+			Map<String, String> cookies = getCookies( request.getCookies() );
+			rec.setVisitor( cookies.get( "visitor" ) );
+
+			registerRequest( rec );
+
 		}
 		catch( MalformedURLException e ) {
 			model.addAttribute( "globalError", "MalformedURLException: " + picasaForm.getUrl() );
@@ -106,6 +127,9 @@ public class IndexController {
 			model.addAttribute( "globalError", "JAXBException: " + e );
 			return "index";
 		}
+		catch( Exception e ) {
+			// TODO log all other exception
+		}
 
 		// TODO fix session auto create in wildfly
 
@@ -113,7 +137,54 @@ public class IndexController {
 	}
 
 	// TODO javadoc
-	private List<BlogImage> urlToImageList( PicasaForm picasaForm ) throws JAXBException, MalformedURLException {
+	private void registerRequest( Record rec ) {
+		if( dataSource != null ) {
+			new Thread( new Runnable() {
+				@Override
+				public void run() {
+					// String sql = "INSERT INTO record( visitor, picasa_user, picasa_album, picasa_rss, alt, ip ) "
+					// + "VALUES( :visitor, :picasaUser, :picasaAlbum, :picasaRss, :alt, :ip )";
+
+					BeanPropertySqlParameterSource data = new BeanPropertySqlParameterSource( rec );
+					// NamedParameterJdbcTemplate jdbc = new NamedParameterJdbcTemplate( dataSource );
+
+					Number newId = new SimpleJdbcInsert( dataSource ).withTableName( "record" )
+							.usingGeneratedKeyColumns( "id", "created" ).executeAndReturnKey( data );
+
+					rec.setId( (long)newId );
+				}
+			} ).start();
+		}
+	}
+
+	// TODO javadoc
+	private void picasaRssGetUrlParams( String rssUrl, Record rec ) {
+		rec.setPicasaRss( rssUrl );
+
+		try {
+			String[] params = new URI( rssUrl ).getPath().split( "/" );
+
+			for( int i = 0, n = params.length; i < n; i++ ) {
+				if( params[i].equals( "user" ) ) {
+					rec.setPicasaUser( params[i++ + 1] );
+					continue;
+				}
+
+				if( params[i].equals( "albumid" ) ) {
+					rec.setPicasaAlbum( params[i + 1] );
+				}
+			}
+		}
+		catch( ArrayIndexOutOfBoundsException | URISyntaxException e ) {
+			// TODO Auto-generated catch block
+			// TODO log all exceptions
+			e.printStackTrace();
+		}
+
+	}
+
+	// TODO javadoc
+	private List<BlogImage> picasaRssToImageList( PicasaForm picasaForm ) throws JAXBException, MalformedURLException {
 		List<BlogImage> images = new ArrayList<>();
 		URL url = new URL( picasaForm.getUrl() );
 
@@ -149,10 +220,27 @@ public class IndexController {
 	}
 
 	/**
+	 * Gets client IP address
+	 * 
+	 * @param request
+	 *        HttpServletRequest
+	 * @return String IP
+	 */
+	private String getIpAddress( HttpServletRequest request ) {
+		String ip = request.getHeader( "X-FORWARDED-FOR" );
+
+		if( ip == null ) {
+			ip = request.getRemoteAddr();
+		}
+
+		return ip;
+	}
+
+	/**
 	 * Converts HTTP Cookies to HashMap<String, String>
 	 * 
 	 * @param cookie
-	 *            array of HttpServletRequest Cookies
+	 *        array of HttpServletRequest Cookies
 	 * @return HashMap<Key, Value>
 	 */
 	private Map<String, String> getCookies( Cookie[] cookie ) {
@@ -171,7 +259,7 @@ public class IndexController {
 	 * Composes String url for redirect after form submit
 	 * 
 	 * @param request
-	 *            HttpServletRequest
+	 *        HttpServletRequest
 	 * @return url as string
 	 */
 	private String composeIndexRedirectUrl( HttpServletRequest request ) {
