@@ -116,7 +116,7 @@ public class IndexController {
 			Map<String, String> cookies = getCookies( request.getCookies() );
 			rec.setVisitor( cookies.get( "visitor" ) );
 
-			registerRequest( rec );
+			persistRequest( rec );
 
 		}
 		catch( MalformedURLException e ) {
@@ -137,17 +137,12 @@ public class IndexController {
 	}
 
 	// TODO javadoc
-	private void registerRequest( Record rec ) {
+	private void persistRequest( Record rec ) {
 		if( dataSource != null ) {
 			new Thread( new Runnable() {
 				@Override
 				public void run() {
-					// String sql = "INSERT INTO record( visitor, picasa_user, picasa_album, picasa_rss, alt, ip ) "
-					// + "VALUES( :visitor, :picasaUser, :picasaAlbum, :picasaRss, :alt, :ip )";
-
 					BeanPropertySqlParameterSource data = new BeanPropertySqlParameterSource( rec );
-					// NamedParameterJdbcTemplate jdbc = new NamedParameterJdbcTemplate( dataSource );
-
 					Number newId = new SimpleJdbcInsert( dataSource ).withTableName( "record" )
 							.usingGeneratedKeyColumns( "id", "created" ).executeAndReturnKey( data );
 
@@ -176,11 +171,9 @@ public class IndexController {
 			}
 		}
 		catch( ArrayIndexOutOfBoundsException | URISyntaxException e ) {
-			// TODO Auto-generated catch block
 			// TODO log all exceptions
 			e.printStackTrace();
 		}
-
 	}
 
 	// TODO javadoc

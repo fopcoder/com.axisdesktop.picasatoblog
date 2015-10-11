@@ -15,6 +15,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jndi.JndiTemplate;
 
+// TODO split mysql & H2 datasources and libraries at compile time
 @Configuration
 public class PersistenceConfig {
 
@@ -42,10 +43,9 @@ public class PersistenceConfig {
 		DataSource ds = null;
 
 		try {
-			ds = (DataSource)new JndiTemplate().lookup( environment.getRequiredProperty( "db.jndi1" ) );
+			ds = (DataSource)new JndiTemplate().lookup( environment.getRequiredProperty( "db.jndi" ) );
 		}
 		catch( Exception e /* IllegalStateException | NamingException e */) {
-			// TODO Auto-generated catch block
 			// TODO log all exceptions
 			e.printStackTrace();
 		}

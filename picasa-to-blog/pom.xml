@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.axisdesktop</groupId>
   <artifactId>picasa-to-blog</artifactId>
-  <version>1.0.6-RELEASE</version>
+  <version>test</version>
   <packaging>war</packaging>
   
   	<properties>
@@ -50,6 +50,12 @@
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>1.4.187</version>
+		</dependency>
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.36</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 	
