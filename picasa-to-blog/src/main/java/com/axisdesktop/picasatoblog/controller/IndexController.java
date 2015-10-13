@@ -85,8 +85,7 @@ public class IndexController {
 
 	// TODO javadoc
 	@RequestMapping( value = "/getrss", method = RequestMethod.POST )
-	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model,
-			RedirectAttributes redirectAttr, HttpServletResponse response, HttpServletRequest request ) {
+	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model, RedirectAttributes redirectAttr, HttpServletResponse response, HttpServletRequest request ) {
 		if( bindingResult.hasErrors() ) {
 			return "index";
 		}
@@ -136,15 +135,22 @@ public class IndexController {
 		return "redirect:" + composeIndexRedirectUrl( request );
 	}
 
-	// TODO javadoc
+	/**
+	 * Persists user data.
+	 * 
+	 * Method uses own thread in case of slow database connection.
+	 * 
+	 * @param rec
+	 *            A filled Record object
+	 * @see Record
+	 */
 	private void persistRequest( Record rec ) {
 		if( dataSource != null ) {
 			new Thread( new Runnable() {
 				@Override
 				public void run() {
 					BeanPropertySqlParameterSource data = new BeanPropertySqlParameterSource( rec );
-					Number newId = new SimpleJdbcInsert( dataSource ).withTableName( "record" )
-							.usingGeneratedKeyColumns( "id", "created" ).executeAndReturnKey( data );
+					Number newId = new SimpleJdbcInsert( dataSource ).withTableName( "record" ).usingGeneratedKeyColumns( "id", "created" ).executeAndReturnKey( data );
 
 					rec.setId( (long)newId );
 				}
@@ -152,7 +158,12 @@ public class IndexController {
 		}
 	}
 
-	// TODO javadoc
+	/**
+	 * @param rssUrl
+	 *            String Picasa RSS string url
+	 * @param rec
+	 * @see Record
+	 */
 	private void picasaRssGetUrlParams( String rssUrl, Record rec ) {
 		rec.setPicasaRss( rssUrl );
 
@@ -216,7 +227,7 @@ public class IndexController {
 	 * Gets client IP address
 	 * 
 	 * @param request
-	 *        HttpServletRequest
+	 *            HttpServletRequest
 	 * @return String IP
 	 */
 	private String getIpAddress( HttpServletRequest request ) {
@@ -233,7 +244,7 @@ public class IndexController {
 	 * Converts HTTP Cookies to HashMap<String, String>
 	 * 
 	 * @param cookie
-	 *        array of HttpServletRequest Cookies
+	 *            array of HttpServletRequest Cookies
 	 * @return HashMap<Key, Value>
 	 */
 	private Map<String, String> getCookies( Cookie[] cookie ) {
@@ -252,7 +263,7 @@ public class IndexController {
 	 * Composes String url for redirect after form submit
 	 * 
 	 * @param request
-	 *        HttpServletRequest
+	 *            HttpServletRequest
 	 * @return url as string
 	 */
 	private String composeIndexRedirectUrl( HttpServletRequest request ) {
