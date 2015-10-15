@@ -187,7 +187,15 @@ public class IndexController {
 		}
 	}
 
-	// TODO javadoc
+	/**
+	 * Gets content of Picasa Rss, parses and converts it to List<BlogImage>
+	 * 
+	 * @param picasaForm
+	 *            form from site
+	 * @return List<BlogImage> list of BlogImage objects
+	 * @throws JAXBException
+	 * @throws MalformedURLException
+	 */
 	private List<BlogImage> picasaRssToImageList( PicasaForm picasaForm ) throws JAXBException, MalformedURLException {
 		List<BlogImage> images = new ArrayList<>();
 		URL url = new URL( picasaForm.getUrl() );
