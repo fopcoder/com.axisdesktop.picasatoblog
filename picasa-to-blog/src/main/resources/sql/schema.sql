@@ -10,3 +10,20 @@ CREATE TABLE `record` (
   /* `ip2` varbinary(16) NOT NULL,*/
   PRIMARY KEY (`id`)
 )  /*!40101 ENGINE=InnoDB DEFAULT CHARSET=utf8 */;
+
+CREATE TABLE `visitor` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `visitor` char(36) NOT NULL,
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `visitor` UNIQUE (`visitor`)
+) /*!40101 ENGINE=InnoDB DEFAULT CHARSET=utf8 */;
+
+CREATE TABLE `visitor_data` (
+  `visitor_id` bigint(20) unsigned NOT NULL,
+  `ip` char(15) NOT NULL,
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`visitor_id`,`ip`),
+  CONSTRAINT `visitor_data_ibfk_1` FOREIGN KEY (`visitor_id`) REFERENCES `visitor` (`id`)
+) /*!40101 ENGINE=InnoDB DEFAULT CHARSET=utf8 */;
+

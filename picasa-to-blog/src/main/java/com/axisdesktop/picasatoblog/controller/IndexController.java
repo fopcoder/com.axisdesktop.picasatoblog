@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.axisdesktop.picasatoblog.entity.Visitor;
+import com.axisdesktop.picasatoblog.entity.VisitorData;
 import com.axisdesktop.picasatoblog.model.BlogImage;
 import com.axisdesktop.picasatoblog.model.PicasaForm;
 import com.axisdesktop.picasatoblog.model.Record;
@@ -50,6 +54,9 @@ public class IndexController {
 
 	@Autowired
 	private DataSource dataSource;
+
+	@Autowired
+	private EntityManagerFactory emf;
 
 	private static final int COOKIE_MAX_AGE = 3600 * 24 * 365 * 10;
 	private static final String COOKIE_PATH = "/";
@@ -85,7 +92,8 @@ public class IndexController {
 
 	// TODO javadoc
 	@RequestMapping( value = "/getrss", method = RequestMethod.POST )
-	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model, RedirectAttributes redirectAttr, HttpServletResponse response, HttpServletRequest request ) {
+	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model,
+			RedirectAttributes redirectAttr, HttpServletResponse response, HttpServletRequest request ) {
 		if( bindingResult.hasErrors() ) {
 			return "index";
 		}
@@ -127,6 +135,7 @@ public class IndexController {
 			return "index";
 		}
 		catch( Exception e ) {
+			e.printStackTrace();
 			// TODO log all other exception
 		}
 
@@ -141,18 +150,44 @@ public class IndexController {
 	 * Method uses own thread in case of slow database connection.
 	 * 
 	 * @param rec
-	 *            A filled Record object
+	 *        A filled Record object
 	 * @see Record
 	 */
 	private void persistRequest( Record rec ) {
 		if( dataSource != null ) {
+
+			EntityManager em = emf.createEntityManager();
+
+			em.getTransaction().begin();
+
+			Visitor visitor = new Visitor( rec.getVisitor() );
+			em.persist( visitor );
+			System.out.println( visitor );
+
+			VisitorData vd = new VisitorData( visitor, rec.getIp() );
+			System.out.println( vd );
+			// visitor.getData().add( );
+
+			em.persist( vd );
+			// System.out.println( visitor );
+
+			// VisitorData vd = new VisitorData( visitor, rec.getIp() );
+			// em.persist( vd );
+			// visitor.getData().add( );
+			// em.persist( entity );
+			em.getTransaction().commit();
+
+			em.close();
+
 			new Thread( new Runnable() {
 				@Override
 				public void run() {
 					BeanPropertySqlParameterSource data = new BeanPropertySqlParameterSource( rec );
-					Number newId = new SimpleJdbcInsert( dataSource ).withTableName( "record" ).usingGeneratedKeyColumns( "id", "created" ).executeAndReturnKey( data );
+					Number newId = new SimpleJdbcInsert( dataSource ).withTableName( "record" )
+							.usingGeneratedKeyColumns( "id", "created" ).executeAndReturnKey( data );
 
 					rec.setId( (long)newId );
+
 				}
 			} ).start();
 		}
@@ -160,7 +195,7 @@ public class IndexController {
 
 	/**
 	 * @param rssUrl
-	 *            String Picasa RSS string url
+	 *        String Picasa RSS string url
 	 * @param rec
 	 * @see Record
 	 */
@@ -191,7 +226,7 @@ public class IndexController {
 	 * Gets content of Picasa Rss, parses and converts it to List<BlogImage>
 	 * 
 	 * @param picasaForm
-	 *            form from site
+	 *        form from site
 	 * @return List<BlogImage> list of BlogImage objects
 	 * @throws JAXBException
 	 * @throws MalformedURLException
@@ -235,7 +270,7 @@ public class IndexController {
 	 * Gets client IP address
 	 * 
 	 * @param request
-	 *            HttpServletRequest
+	 *        HttpServletRequest
 	 * @return String IP
 	 */
 	private String getIpAddress( HttpServletRequest request ) {
@@ -252,7 +287,7 @@ public class IndexController {
 	 * Converts HTTP Cookies to HashMap<String, String>
 	 * 
 	 * @param cookie
-	 *            array of HttpServletRequest Cookies
+	 *        array of HttpServletRequest Cookies
 	 * @return HashMap<Key, Value>
 	 */
 	private Map<String, String> getCookies( Cookie[] cookie ) {
@@ -271,7 +306,7 @@ public class IndexController {
 	 * Composes String url for redirect after form submit
 	 * 
 	 * @param request
-	 *            HttpServletRequest
+	 *        HttpServletRequest
 	 * @return url as string
 	 */
 	private String composeIndexRedirectUrl( HttpServletRequest request ) {
