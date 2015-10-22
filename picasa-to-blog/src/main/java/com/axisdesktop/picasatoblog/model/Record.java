@@ -11,6 +11,7 @@ public class Record {
 	private String picasaRss;
 	private String alt;
 	private String ip;
+	private String title;
 
 	public long getId() {
 		return id;
@@ -76,10 +77,19 @@ public class Record {
 		this.ip = ip;
 	}
 
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle( String title ) {
+		this.title = title;
+	}
+
 	@Override
 	public String toString() {
 		return "Record [id=" + id + ", created=" + created + ", visitor=" + visitor + ", picasaUser=" + picasaUser
-				+ ", picasaAlbum=" + picasaAlbum + ", picasaRss=" + picasaRss + ", alt=" + alt + ", ip=" + ip + "]";
+				+ ", picasaAlbum=" + picasaAlbum + ", picasaRss=" + picasaRss + ", alt=" + alt + ", ip=" + ip
+				+ ", title=" + title + "]";
 	}
 
 }

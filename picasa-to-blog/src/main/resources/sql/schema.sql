@@ -11,9 +11,19 @@ CREATE TABLE `record` (
   PRIMARY KEY (`id`)
 )  /*!40101 ENGINE=InnoDB DEFAULT CHARSET=utf8 */;
 
+CREATE TABLE `album` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `external_name` varchar(100) NOT NULL,
+  `external_id` varchar(50) NOT NULL,
+  `external_user` varchar(50) NOT NULL,
+  `external_rss` varchar(255) NOT NULL,
+  `alt` varchar(200) NOT NULL,
+  PRIMARY KEY (`id`)
+) /*!40101 ENGINE=InnoDB DEFAULT CHARSET=utf8 */;
 
 CREATE TABLE `album_data` (
-  `id` bigint(20) unsigned NOT NULL,
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `album_id` bigint(20) unsigned NOT NULL,
   `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,

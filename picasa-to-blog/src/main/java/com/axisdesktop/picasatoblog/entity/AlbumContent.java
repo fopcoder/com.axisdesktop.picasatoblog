@@ -1,26 +1,26 @@
 package com.axisdesktop.picasatoblog.entity;
 
+import java.io.Serializable;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.MapsId;
 import javax.persistence.OneToOne;
 
 @Entity( name = "album_content" )
-public class AlbumContent {
+@SuppressWarnings( "serial" )
+public class AlbumContent implements Serializable {
 
-	@MapsId
-	@OneToOne( fetch = FetchType.LAZY )
-	@JoinColumn( name = "album_data_id" )
+	@Id
+	@OneToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
+	@JoinColumn( name = "album_data_id", referencedColumnName = "id" )
 	private AlbumData albumData;
 
 	private String data;
 
 	public AlbumContent() {
-	}
-
-	public AlbumContent( String data ) {
-		this.data = data;
 	}
 
 	public AlbumContent( AlbumData albumData, String data ) {

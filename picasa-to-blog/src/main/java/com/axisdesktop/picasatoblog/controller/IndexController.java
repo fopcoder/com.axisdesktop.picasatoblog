@@ -33,8 +33,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.axisdesktop.picasatoblog.entity.Visitor;
-import com.axisdesktop.picasatoblog.entity.VisitorData;
+import com.axisdesktop.picasatoblog.entity.Album;
+import com.axisdesktop.picasatoblog.entity.AlbumContent;
+import com.axisdesktop.picasatoblog.entity.AlbumData;
 import com.axisdesktop.picasatoblog.model.BlogImage;
 import com.axisdesktop.picasatoblog.model.PicasaForm;
 import com.axisdesktop.picasatoblog.model.Record;
@@ -119,6 +120,7 @@ public class IndexController {
 			picasaRssGetUrlParams( picasaForm.getUrl(), rec );
 			rec.setIp( getIpAddress( request ) );
 			rec.setAlt( picasaForm.getAlt() );
+			rec.setTitle( picasaForm.getTitle() );
 
 			Map<String, String> cookies = getCookies( request.getCookies() );
 			rec.setVisitor( cookies.get( "visitor" ) );
@@ -160,15 +162,31 @@ public class IndexController {
 
 			em.getTransaction().begin();
 
-			Visitor visitor = new Visitor( rec.getVisitor() );
-			em.persist( visitor );
-			System.out.println( visitor );
+			Album album = new Album( rec.getTitle(), rec.getPicasaAlbum(), rec.getPicasaUser(), rec.getPicasaRss(),
+					rec.getAlt() );
+			// em.persist( album );
+			AlbumData albumData = new AlbumData( album, rec.getTitle() );
+			// AlbumData albumData2 = new AlbumData( album, "test title2" );
+			// album.getAlbumData().add( albumData );
+			// AlbumContent albumContent = new AlbumContent( albumData, "test content" );
+			// albumData.setAlbumContent( albumContent );
 
-			VisitorData vd = new VisitorData( visitor, rec.getIp() );
-			System.out.println( vd );
-			// visitor.getData().add( );
+			// album.getAlbumData().setAlbumContent( new AlbumContent( "test content" ) );
 
-			em.persist( vd );
+			em.persist( albumData );
+			// em.persist( albumContent );
+			// em.persist( albumData2 );
+			System.out.println( album );
+
+			// Visitor visitor = new Visitor( rec.getVisitor() );
+			// em.persist( visitor );
+			// System.out.println( visitor );
+			//
+			// VisitorData vd = new VisitorData( visitor, rec.getIp() );
+			// System.out.println( vd );
+			// // visitor.getData().add( );
+			//
+			// em.persist( vd );
 			// System.out.println( visitor );
 
 			// VisitorData vd = new VisitorData( visitor, rec.getIp() );
@@ -238,6 +256,8 @@ public class IndexController {
 		JAXBContext jaxbCtx = JAXBContext.newInstance( RssNode.class );
 		Unmarshaller unmarshaller = jaxbCtx.createUnmarshaller();
 		RssNode xmlData = (RssNode)unmarshaller.unmarshal( url );
+
+		picasaForm.setTitle( xmlData.getChannel().getTitle() );
 
 		for( ItemNode i : xmlData.getChannel().getItems() ) {
 			String newUrl;
