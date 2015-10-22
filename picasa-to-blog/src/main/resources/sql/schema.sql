@@ -11,6 +11,27 @@ CREATE TABLE `record` (
   PRIMARY KEY (`id`)
 )  /*!40101 ENGINE=InnoDB DEFAULT CHARSET=utf8 */;
 
+
+CREATE TABLE `album_data` (
+  `id` bigint(20) unsigned NOT NULL,
+  `album_id` bigint(20) unsigned NOT NULL,
+  `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `modified` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `title` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `album_id` INDEX (`album_id`),
+  CONSTRAINT `album_data_ibfk_1` FOREIGN KEY (`album_id`) REFERENCES `album` (`id`)
+) /*!40101 ENGINE=InnoDB DEFAULT CHARSET=utf8 */;
+
+CREATE TABLE `album_content` (
+  `album_data_id` bigint(20) unsigned NOT NULL,
+  `data` longtext,
+  PRIMARY KEY (`album_data_id`),
+  CONSTRAINT `album_content_ibfk_1` FOREIGN KEY (`album_data_id`) REFERENCES `album_data` (`id`)
+) /*!40101 ENGINE=InnoDB DEFAULT CHARSET=utf8 */;
+
+
+
 CREATE TABLE `visitor` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `visitor` char(36) NOT NULL,
