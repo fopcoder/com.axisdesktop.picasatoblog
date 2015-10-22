@@ -13,6 +13,20 @@ import javax.persistence.OneToOne;
 @SuppressWarnings( "serial" )
 public class AlbumContent implements Serializable {
 
+	// @Id
+	// @Column(name="OWNER_ID")
+	// private long ownerId;
+	//
+	// @OneToOne
+	// @PrimaryKeyJoinColumn(name="OWNER_ID", referencedColumnName="EMP_ID")
+	// private Employee owner;
+	// ...
+	//
+	// public void setOwner(Employee owner) {
+	// this.owner = owner;
+	// this.ownerId = owner.getId();
+	// }
+
 	@Id
 	@OneToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
 	@JoinColumn( name = "album_data_id", referencedColumnName = "id" )
