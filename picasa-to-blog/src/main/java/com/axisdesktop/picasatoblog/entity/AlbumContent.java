@@ -1,38 +1,31 @@
 package com.axisdesktop.picasatoblog.entity;
 
-import java.io.Serializable;
-
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
 
 @Entity( name = "album_content" )
-@SuppressWarnings( "serial" )
-public class AlbumContent implements Serializable {
-
-	// @Id
-	// @Column(name="OWNER_ID")
-	// private long ownerId;
-	//
-	// @OneToOne
-	// @PrimaryKeyJoinColumn(name="OWNER_ID", referencedColumnName="EMP_ID")
-	// private Employee owner;
-	// ...
-	//
-	// public void setOwner(Employee owner) {
-	// this.owner = owner;
-	// this.ownerId = owner.getId();
-	// }
+public class AlbumContent {
 
 	@Id
+	@Column( name = "album_data_id", insertable = false )
+	private long albumDataId;
+
 	@OneToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
 	@JoinColumn( name = "album_data_id", referencedColumnName = "id" )
 	private AlbumData albumData;
 
 	private String data;
+
+	@PrePersist
+	private void prePersist() {
+		this.albumDataId = this.albumData.getId();
+	}
 
 	public AlbumContent() {
 	}
@@ -40,6 +33,7 @@ public class AlbumContent implements Serializable {
 	public AlbumContent( AlbumData albumData, String data ) {
 		this.albumData = albumData;
 		this.data = data;
+		this.albumDataId = this.albumData.getId();
 	}
 
 	public AlbumData getAlbumData() {
@@ -48,6 +42,7 @@ public class AlbumContent implements Serializable {
 
 	public void setAlbumData( AlbumData albumData ) {
 		this.albumData = albumData;
+		this.albumDataId = this.albumData.getId();
 	}
 
 	public String getData() {
@@ -58,9 +53,17 @@ public class AlbumContent implements Serializable {
 		this.data = data;
 	}
 
+	public long getAlbumDataId() {
+		return albumDataId;
+	}
+
+	public void setAlbumDataId( long albumDataId ) {
+		this.albumDataId = albumDataId;
+	}
+
 	@Override
 	public String toString() {
-		return "AlbumContent [albumData=" + albumData + ", data=" + data + "]";
+		return "AlbumContent [albumDataId=" + albumDataId + ", albumData=" + albumData + ", data=" + data + "]";
 	}
 
 }

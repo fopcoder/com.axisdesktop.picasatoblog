@@ -93,8 +93,7 @@ public class IndexController {
 
 	// TODO javadoc
 	@RequestMapping( value = "/getrss", method = RequestMethod.POST )
-	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model,
-			RedirectAttributes redirectAttr, HttpServletResponse response, HttpServletRequest request ) {
+	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model, RedirectAttributes redirectAttr, HttpServletResponse response, HttpServletRequest request ) {
 		if( bindingResult.hasErrors() ) {
 			return "index";
 		}
@@ -152,7 +151,7 @@ public class IndexController {
 	 * Method uses own thread in case of slow database connection.
 	 * 
 	 * @param rec
-	 *        A filled Record object
+	 *            A filled Record object
 	 * @see Record
 	 */
 	private void persistRequest( Record rec ) {
@@ -162,19 +161,18 @@ public class IndexController {
 
 			em.getTransaction().begin();
 
-			Album album = new Album( rec.getTitle(), rec.getPicasaAlbum(), rec.getPicasaUser(), rec.getPicasaRss(),
-					rec.getAlt() );
+			Album album = new Album( rec.getTitle(), rec.getPicasaAlbum(), rec.getPicasaUser(), rec.getPicasaRss(), rec.getAlt() );
 			// em.persist( album );
 			AlbumData albumData = new AlbumData( album, rec.getTitle() );
 			// AlbumData albumData2 = new AlbumData( album, "test title2" );
 			// album.getAlbumData().add( albumData );
-			// AlbumContent albumContent = new AlbumContent( albumData, "test content" );
+			AlbumContent albumContent = new AlbumContent( albumData, "test content" );
 			// albumData.setAlbumContent( albumContent );
 
 			// album.getAlbumData().setAlbumContent( new AlbumContent( "test content" ) );
 
 			em.persist( albumData );
-			// em.persist( albumContent );
+			em.persist( albumContent );
 			// em.persist( albumData2 );
 			System.out.println( album );
 
@@ -201,8 +199,7 @@ public class IndexController {
 				@Override
 				public void run() {
 					BeanPropertySqlParameterSource data = new BeanPropertySqlParameterSource( rec );
-					Number newId = new SimpleJdbcInsert( dataSource ).withTableName( "record" )
-							.usingGeneratedKeyColumns( "id", "created" ).executeAndReturnKey( data );
+					Number newId = new SimpleJdbcInsert( dataSource ).withTableName( "record" ).usingGeneratedKeyColumns( "id", "created" ).executeAndReturnKey( data );
 
 					rec.setId( (long)newId );
 
@@ -213,7 +210,7 @@ public class IndexController {
 
 	/**
 	 * @param rssUrl
-	 *        String Picasa RSS string url
+	 *            String Picasa RSS string url
 	 * @param rec
 	 * @see Record
 	 */
@@ -244,7 +241,7 @@ public class IndexController {
 	 * Gets content of Picasa Rss, parses and converts it to List<BlogImage>
 	 * 
 	 * @param picasaForm
-	 *        form from site
+	 *            form from site
 	 * @return List<BlogImage> list of BlogImage objects
 	 * @throws JAXBException
 	 * @throws MalformedURLException
@@ -290,7 +287,7 @@ public class IndexController {
 	 * Gets client IP address
 	 * 
 	 * @param request
-	 *        HttpServletRequest
+	 *            HttpServletRequest
 	 * @return String IP
 	 */
 	private String getIpAddress( HttpServletRequest request ) {
@@ -307,7 +304,7 @@ public class IndexController {
 	 * Converts HTTP Cookies to HashMap<String, String>
 	 * 
 	 * @param cookie
-	 *        array of HttpServletRequest Cookies
+	 *            array of HttpServletRequest Cookies
 	 * @return HashMap<Key, Value>
 	 */
 	private Map<String, String> getCookies( Cookie[] cookie ) {
@@ -326,7 +323,7 @@ public class IndexController {
 	 * Composes String url for redirect after form submit
 	 * 
 	 * @param request
-	 *        HttpServletRequest
+	 *            HttpServletRequest
 	 * @return url as string
 	 */
 	private String composeIndexRedirectUrl( HttpServletRequest request ) {

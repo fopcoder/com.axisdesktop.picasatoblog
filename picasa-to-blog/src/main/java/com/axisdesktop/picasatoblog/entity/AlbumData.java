@@ -110,8 +110,7 @@ public class AlbumData {
 
 	@Override
 	public String toString() {
-		return "AlbumData [id=" + id + ", album=" + album + ", created=" + created + ", modified=" + modified
-				+ ", title=" + title + ", albumContent=" + albumContent + "]";
+		return "AlbumData [id=" + id + ", album=" + album + ", created=" + created + ", modified=" + modified + ", title=" + title + ", albumContent=" + albumContent + "]";
 	}
 
 }
