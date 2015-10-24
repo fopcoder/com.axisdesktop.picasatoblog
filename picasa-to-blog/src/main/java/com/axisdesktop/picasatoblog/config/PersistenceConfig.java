@@ -76,6 +76,7 @@ public class PersistenceConfig {
 		factory.setJpaVendorAdapter( vendorAdapter );
 		factory.setPackagesToScan( "com.axisdesktop.picasatoblog.entity" );
 		factory.setDataSource( dataSource() );
+		factory.setPersistenceUnitName( "picasablog-jndi" );
 
 		Properties jpaProperties = new Properties();
 		// jpaProperties.put( "hibernate.format_sql", environment.getProperty( "hibernate.format_sql" ) );

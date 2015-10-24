@@ -8,8 +8,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
+import javax.persistence.Table;
 
-@Entity( name = "album_content" )
+@Entity
+@Table( name = "album_content" )
 public class AlbumContent {
 
 	@Id

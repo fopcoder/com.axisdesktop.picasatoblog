@@ -13,10 +13,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-@Entity( name = "album_data" )
+@Entity
+@Table( name = "album_data" )
 public class AlbumData {
 	@Id
 	@GeneratedValue
@@ -110,7 +112,8 @@ public class AlbumData {
 
 	@Override
 	public String toString() {
-		return "AlbumData [id=" + id + ", album=" + album + ", created=" + created + ", modified=" + modified + ", title=" + title + ", albumContent=" + albumContent + "]";
+		return "AlbumData [id=" + id + ", album=" + album + ", created=" + created + ", modified=" + modified
+				+ ", title=" + title + ", albumContent=" + albumContent + "]";
 	}
 
 }

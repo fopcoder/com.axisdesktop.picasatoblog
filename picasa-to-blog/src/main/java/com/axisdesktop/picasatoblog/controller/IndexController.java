@@ -11,12 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.sql.DataSource;
 import javax.validation.Valid;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -24,8 +21,6 @@ import javax.xml.bind.Unmarshaller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -34,19 +29,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.axisdesktop.picasatoblog.entity.Album;
-import com.axisdesktop.picasatoblog.entity.AlbumContent;
-import com.axisdesktop.picasatoblog.entity.AlbumData;
+import com.axisdesktop.picasatoblog.entity.Visitor;
 import com.axisdesktop.picasatoblog.model.BlogImage;
 import com.axisdesktop.picasatoblog.model.PicasaForm;
 import com.axisdesktop.picasatoblog.model.Record;
 import com.axisdesktop.picasatoblog.picasarss.ContentNode;
 import com.axisdesktop.picasatoblog.picasarss.ItemNode;
 import com.axisdesktop.picasatoblog.picasarss.RssNode;
+import com.axisdesktop.picasatoblog.service.AlbumService;
+import com.axisdesktop.picasatoblog.service.VisitorService;
 
-/**
- * @author 1111
- *
- */
 @Controller
 public class IndexController {
 
@@ -54,10 +46,10 @@ public class IndexController {
 	private Environment environment;
 
 	@Autowired
-	private DataSource dataSource;
+	private VisitorService visitorService;
 
 	@Autowired
-	private EntityManagerFactory emf;
+	private AlbumService albumService;
 
 	private static final int COOKIE_MAX_AGE = 3600 * 24 * 365 * 10;
 	private static final String COOKIE_PATH = "/";
@@ -93,7 +85,8 @@ public class IndexController {
 
 	// TODO javadoc
 	@RequestMapping( value = "/getrss", method = RequestMethod.POST )
-	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model, RedirectAttributes redirectAttr, HttpServletResponse response, HttpServletRequest request ) {
+	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model,
+			RedirectAttributes redirectAttr, HttpServletResponse response, HttpServletRequest request ) {
 		if( bindingResult.hasErrors() ) {
 			return "index";
 		}
@@ -119,7 +112,7 @@ public class IndexController {
 			picasaRssGetUrlParams( picasaForm.getUrl(), rec );
 			rec.setIp( getIpAddress( request ) );
 			rec.setAlt( picasaForm.getAlt() );
-			rec.setTitle( picasaForm.getTitle() );
+			rec.setExternalName( picasaForm.getTitle() );
 
 			Map<String, String> cookies = getCookies( request.getCookies() );
 			rec.setVisitor( cookies.get( "visitor" ) );
@@ -151,83 +144,48 @@ public class IndexController {
 	 * Method uses own thread in case of slow database connection.
 	 * 
 	 * @param rec
-	 *            A filled Record object
+	 *        A filled Record object
 	 * @see Record
 	 */
 	private void persistRequest( Record rec ) {
-		if( dataSource != null ) {
+		// if( dataSource != null ) {
+		Visitor vis = visitorService.saveVisitor( rec );
+		Album album = albumService.saveAlbum( rec );
 
-			EntityManager em = emf.createEntityManager();
-
-			em.getTransaction().begin();
-
-			Album album = new Album( rec.getTitle(), rec.getPicasaAlbum(), rec.getPicasaUser(), rec.getPicasaRss(), rec.getAlt() );
-			// em.persist( album );
-			AlbumData albumData = new AlbumData( album, rec.getTitle() );
-			// AlbumData albumData2 = new AlbumData( album, "test title2" );
-			// album.getAlbumData().add( albumData );
-			AlbumContent albumContent = new AlbumContent( albumData, "test content" );
-			// albumData.setAlbumContent( albumContent );
-
-			// album.getAlbumData().setAlbumContent( new AlbumContent( "test content" ) );
-
-			em.persist( albumData );
-			em.persist( albumContent );
-			// em.persist( albumData2 );
-			System.out.println( album );
-
-			// Visitor visitor = new Visitor( rec.getVisitor() );
-			// em.persist( visitor );
-			// System.out.println( visitor );
-			//
-			// VisitorData vd = new VisitorData( visitor, rec.getIp() );
-			// System.out.println( vd );
-			// // visitor.getData().add( );
-			//
-			// em.persist( vd );
-			// System.out.println( visitor );
-
-			// VisitorData vd = new VisitorData( visitor, rec.getIp() );
-			// em.persist( vd );
-			// visitor.getData().add( );
-			// em.persist( entity );
-			em.getTransaction().commit();
-
-			em.close();
-
-			new Thread( new Runnable() {
-				@Override
-				public void run() {
-					BeanPropertySqlParameterSource data = new BeanPropertySqlParameterSource( rec );
-					Number newId = new SimpleJdbcInsert( dataSource ).withTableName( "record" ).usingGeneratedKeyColumns( "id", "created" ).executeAndReturnKey( data );
-
-					rec.setId( (long)newId );
-
-				}
-			} ).start();
-		}
+		// new Thread( new Runnable() {
+		// @Override
+		// public void run() {
+		// BeanPropertySqlParameterSource data = new BeanPropertySqlParameterSource( rec );
+		// Number newId = new SimpleJdbcInsert( dataSource ).withTableName( "record" )
+		// .usingGeneratedKeyColumns( "id", "created" ).executeAndReturnKey( data );
+		//
+		// rec.setId( (long)newId );
+		//
+		// }
+		// } ).start();
+		// }
 	}
 
 	/**
 	 * @param rssUrl
-	 *            String Picasa RSS string url
+	 *        String Picasa RSS string url
 	 * @param rec
 	 * @see Record
 	 */
 	private void picasaRssGetUrlParams( String rssUrl, Record rec ) {
-		rec.setPicasaRss( rssUrl );
+		rec.setExternalRss( rssUrl );
 
 		try {
 			String[] params = new URI( rssUrl ).getPath().split( "/" );
 
 			for( int i = 0, n = params.length; i < n; i++ ) {
 				if( params[i].equals( "user" ) ) {
-					rec.setPicasaUser( params[i++ + 1] );
+					rec.setExternalUser( params[i++ + 1] );
 					continue;
 				}
 
 				if( params[i].equals( "albumid" ) ) {
-					rec.setPicasaAlbum( params[i + 1] );
+					rec.setExternalAlbum( params[i + 1] );
 				}
 			}
 		}
@@ -241,7 +199,7 @@ public class IndexController {
 	 * Gets content of Picasa Rss, parses and converts it to List<BlogImage>
 	 * 
 	 * @param picasaForm
-	 *            form from site
+	 *        form from site
 	 * @return List<BlogImage> list of BlogImage objects
 	 * @throws JAXBException
 	 * @throws MalformedURLException
@@ -287,7 +245,7 @@ public class IndexController {
 	 * Gets client IP address
 	 * 
 	 * @param request
-	 *            HttpServletRequest
+	 *        HttpServletRequest
 	 * @return String IP
 	 */
 	private String getIpAddress( HttpServletRequest request ) {
@@ -304,7 +262,7 @@ public class IndexController {
 	 * Converts HTTP Cookies to HashMap<String, String>
 	 * 
 	 * @param cookie
-	 *            array of HttpServletRequest Cookies
+	 *        array of HttpServletRequest Cookies
 	 * @return HashMap<Key, Value>
 	 */
 	private Map<String, String> getCookies( Cookie[] cookie ) {
@@ -323,7 +281,7 @@ public class IndexController {
 	 * Composes String url for redirect after form submit
 	 * 
 	 * @param request
-	 *            HttpServletRequest
+	 *        HttpServletRequest
 	 * @return url as string
 	 */
 	private String composeIndexRedirectUrl( HttpServletRequest request ) {

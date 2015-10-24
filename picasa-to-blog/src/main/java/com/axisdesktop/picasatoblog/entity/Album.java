@@ -11,10 +11,13 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-@Entity( name = "album" )
+@Entity
+@Table( name = "album" )
 public class Album {
 
 	@Id
@@ -24,6 +27,9 @@ public class Album {
 	@Column( updatable = false )
 	@Temporal( TemporalType.TIMESTAMP )
 	private Calendar created;
+
+	@Temporal( TemporalType.TIMESTAMP )
+	private Calendar modified;
 
 	@Column( name = "external_name", nullable = false )
 	private String externalName;
@@ -44,7 +50,12 @@ public class Album {
 
 	@PrePersist
 	private void prePersist() {
-		this.created = Calendar.getInstance();
+		this.created = this.modified = Calendar.getInstance();
+	}
+
+	@PreUpdate
+	private void preUpdate() {
+		this.modified = Calendar.getInstance();
 	}
 
 	public Album() {

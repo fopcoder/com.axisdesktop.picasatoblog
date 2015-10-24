@@ -37,27 +37,27 @@ public class Record {
 		this.visitor = visitor;
 	}
 
-	public String getPicasaUser() {
+	public String getExternalUser() {
 		return picasaUser;
 	}
 
-	public void setPicasaUser( String picasaUser ) {
+	public void setExternalUser( String picasaUser ) {
 		this.picasaUser = picasaUser;
 	}
 
-	public String getPicasaAlbum() {
+	public String getExternalId() {
 		return picasaAlbum;
 	}
 
-	public void setPicasaAlbum( String picasaAlbum ) {
+	public void setExternalAlbum( String picasaAlbum ) {
 		this.picasaAlbum = picasaAlbum;
 	}
 
-	public String getPicasaRss() {
+	public String getExternalRss() {
 		return picasaRss;
 	}
 
-	public void setPicasaRss( String picasaRss ) {
+	public void setExternalRss( String picasaRss ) {
 		this.picasaRss = picasaRss;
 	}
 
@@ -77,11 +77,11 @@ public class Record {
 		this.ip = ip;
 	}
 
-	public String getTitle() {
+	public String getExternalName() {
 		return title;
 	}
 
-	public void setTitle( String title ) {
+	public void setExternalName( String title ) {
 		this.title = title;
 	}
 

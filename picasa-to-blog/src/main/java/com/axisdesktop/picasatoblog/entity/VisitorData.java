@@ -2,29 +2,28 @@ package com.axisdesktop.picasatoblog.entity;
 
 import java.util.Calendar;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
+import javax.persistence.Table;
 
-@Entity( name = "visitor_data" )
+@Entity
+@Table( name = "visitor_data" )
 @IdClass( VisitorDataPK.class )
 public class VisitorData {
 
-	// @Id
-	// @Column( name = "visitor_id", insertable = false, updatable = false )
-	// @Transient
-	// private long visitorId;
-
 	@Id
-	@Column( nullable = false )
+	@Column( nullable = false, length = 15 )
 	private String ip;
 
 	@Id
-	@ManyToOne
+	@ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
 	@JoinColumn( name = "visitor_id", referencedColumnName = "id" )
 	private Visitor visitor;
 
@@ -37,6 +36,10 @@ public class VisitorData {
 	}
 
 	public VisitorData() {
+	}
+
+	public VisitorData( String ip ) {
+		this.ip = ip;
 	}
 
 	public VisitorData( Visitor visitor, String ip ) {
@@ -68,17 +71,9 @@ public class VisitorData {
 		this.ip = ip;
 	}
 
-	// public long getVisitorId() {
-	// return visitorId;
-	// }
-	//
-	// public void setVisitorId( long visitorId ) {
-	// this.visitorId = visitorId;
-	// }
-
 	@Override
 	public String toString() {
-		return "VisitorData [visitor=" + visitor + ", created=" + created + ", ip=" + ip + "]";
+		return "VisitorData [ip=" + ip + ", visitor=" + visitor + ", created=" + created + "]";
 	}
 
 }
