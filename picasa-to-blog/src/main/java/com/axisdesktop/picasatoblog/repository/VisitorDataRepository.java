@@ -10,6 +10,6 @@ import com.axisdesktop.picasatoblog.entity.VisitorData;
 public interface VisitorDataRepository extends JpaRepository<VisitorData, Long> {
 	VisitorData findByVisitorIdAndIpLike( long id, String ip );
 
-	// @Query( "SELECT COUNT(*) > 0 FROM VisitorData vd WHERE vd.visitor_id = :visitor AND vd.ip LIKE :ip" )
-	// boolean existsByVisitorIdAndIpLike( @Param( "visitor" ) long visitor, @Param( "ip" ) String ip );
+	@Query( "SELECT COUNT(*) > 0 FROM VisitorData WHERE visitor = :visitor AND ip LIKE :ip" )
+	boolean existsByVisitorAndIpLike( @Param( "visitor" ) Visitor visitor, @Param( "ip" ) String ip );
 }

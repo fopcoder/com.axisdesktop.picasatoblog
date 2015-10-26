@@ -26,16 +26,12 @@ public class VisitorServiceImpl implements VisitorService {
 
 		if( visitor == null ) {
 			visitor = new Visitor( rec.getVisitor() );
-			VisitorData vd = new VisitorData( visitor, rec.getIp() );
-			visitor.getData().add( vd );
+			visitor.getData().add( new VisitorData( visitor, rec.getIp() ) );
 			visitorRepo.save( visitor );
 		}
 		else {
-			VisitorData vd = visitorDataRepo.findByVisitorIdAndIpLike( visitor.getId(), rec.getIp() );
-			// if( visitorDataRepo.existsByVisitorIdAndIpLike( visitor.getId(), rec.getIp() ) ) {
-			if( vd == null ) {
-				vd = new VisitorData( visitor, rec.getIp() );
-				visitorDataRepo.save( vd );
+			if( !visitorDataRepo.existsByVisitorAndIpLike( visitor, rec.getIp() ) ) {
+				visitorDataRepo.save( new VisitorData( visitor, rec.getIp() ) );
 			}
 		}
 
