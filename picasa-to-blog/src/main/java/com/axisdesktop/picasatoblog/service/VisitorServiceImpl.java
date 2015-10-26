@@ -22,7 +22,7 @@ public class VisitorServiceImpl implements VisitorService {
 	@Override
 	@Transactional
 	public Visitor saveVisitor( Record rec ) {
-		Visitor visitor = visitorRepo.findByVisitor( rec.getVisitor() );
+		Visitor visitor = visitorRepo.findByVisitorLike( rec.getVisitor() );
 
 		if( visitor == null ) {
 			visitor = new Visitor( rec.getVisitor() );
@@ -31,12 +31,11 @@ public class VisitorServiceImpl implements VisitorService {
 			visitorRepo.save( visitor );
 		}
 		else {
-			VisitorData vd = visitorDataRepo.findByVisitorIdAndIp( visitor.getId(), rec.getIp() );
-
+			VisitorData vd = visitorDataRepo.findByVisitorIdAndIpLike( visitor.getId(), rec.getIp() );
+			// if( visitorDataRepo.existsByVisitorIdAndIpLike( visitor.getId(), rec.getIp() ) ) {
 			if( vd == null ) {
 				vd = new VisitorData( visitor, rec.getIp() );
-				visitor.getData().add( vd );
-				visitorRepo.save( visitor );
+				visitorDataRepo.save( vd );
 			}
 		}
 

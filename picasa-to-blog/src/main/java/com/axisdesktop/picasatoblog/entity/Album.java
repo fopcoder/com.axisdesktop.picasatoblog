@@ -1,15 +1,16 @@
 package com.axisdesktop.picasatoblog.entity;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
@@ -45,12 +46,20 @@ public class Album {
 
 	private String alt = "";
 
-	@OneToMany( mappedBy = "album", cascade = CascadeType.PERSIST )
-	private List<AlbumData> albumData = new ArrayList<>();
+	@Column( nullable = false )
+	private String title;
+
+	@OneToOne( mappedBy = "album", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY )
+	private AlbumData albumData;
+
+	@ManyToOne( fetch = FetchType.LAZY )
+	@JoinColumn( name = "visitor_id", referencedColumnName = "id" )
+	private Visitor visitor;
 
 	@PrePersist
 	private void prePersist() {
 		this.created = this.modified = Calendar.getInstance();
+		this.title = this.externalName;
 	}
 
 	@PreUpdate
@@ -61,7 +70,9 @@ public class Album {
 	public Album() {
 	}
 
-	public Album( String externalName, String externalId, String externalUser, String externalRss, String alt ) {
+	public Album( Visitor visitor, String externalName, String externalId, String externalUser, String externalRss,
+			String alt ) {
+		this.visitor = visitor;
 		this.externalName = externalName;
 		this.externalId = externalId;
 		this.externalUser = externalUser;
@@ -125,19 +136,43 @@ public class Album {
 		this.alt = alt;
 	}
 
-	public List<AlbumData> getAlbumData() {
+	public AlbumData getAlbumData() {
 		return albumData;
 	}
 
-	public void setAlbumData( List<AlbumData> albumData ) {
+	public void setAlbumData( AlbumData albumData ) {
 		this.albumData = albumData;
+	}
+
+	public Calendar getModified() {
+		return modified;
+	}
+
+	public void setModified( Calendar modified ) {
+		this.modified = modified;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle( String title ) {
+		this.title = title;
+	}
+
+	public Visitor getVisitor() {
+		return visitor;
+	}
+
+	public void setVisitor( Visitor visitor ) {
+		this.visitor = visitor;
 	}
 
 	@Override
 	public String toString() {
-		return "Album [id=" + id + ", created=" + created + ", externalName=" + externalName + ", externalId="
-				+ externalId + ", externalUser=" + externalUser + ", externalRss=" + externalRss + ", alt=" + alt
-				+ ", albumData=" + albumData + "]";
+		return "Album [id=" + id + ", created=" + created + ", modified=" + modified + ", externalName=" + externalName
+				+ ", externalId=" + externalId + ", externalUser=" + externalUser + ", externalRss=" + externalRss
+				+ ", alt=" + alt + ", title=" + title + ", albumData=" + albumData + ", visitor=" + visitor + "]";
 	}
 
 }

@@ -1,7 +1,9 @@
 package com.axisdesktop.picasatoblog.entity;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -29,6 +31,9 @@ public class Visitor {
 
 	@OneToMany( mappedBy = "visitor", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
 	Set<VisitorData> data = new HashSet<VisitorData>();
+
+	@OneToMany( mappedBy = "visitor", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
+	List<Album> album = new ArrayList<>();
 
 	public Visitor() {
 	}
@@ -72,6 +77,14 @@ public class Visitor {
 
 	public void setData( Set<VisitorData> data ) {
 		this.data = data;
+	}
+
+	public List<Album> getAlbum() {
+		return album;
+	}
+
+	public void setAlbum( List<Album> album ) {
+		this.album = album;
 	}
 
 	@Override

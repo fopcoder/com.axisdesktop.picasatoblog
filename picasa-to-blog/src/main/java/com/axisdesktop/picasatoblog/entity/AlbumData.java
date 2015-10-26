@@ -1,65 +1,40 @@
 package com.axisdesktop.picasatoblog.entity;
 
-import java.util.Calendar;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 @Entity
 @Table( name = "album_data" )
 public class AlbumData {
 	@Id
-	@GeneratedValue
+	@Column( name = "album_id" )
 	private long id;
 
-	@ManyToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
+	@OneToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST )
 	@JoinColumn( name = "album_id", referencedColumnName = "id" )
 	private Album album;
 
-	@Column( updatable = false )
-	@Temporal( TemporalType.TIMESTAMP )
-	private Calendar created;
-
-	@Temporal( TemporalType.TIMESTAMP )
-	private Calendar modified;
-
-	private String title;
-
-	@OneToOne( fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, mappedBy = "albumData" )
-	private AlbumContent albumContent;
+	private String data;
 
 	@PrePersist
 	private void prePersist() {
-		this.created = this.modified = Calendar.getInstance();
-	}
-
-	@PreUpdate
-	private void preUpdate() {
-		this.modified = Calendar.getInstance();
+		this.id = this.album.getId();
 	}
 
 	public AlbumData() {
 	}
 
-	public AlbumData( String title ) {
-		this.title = title;
-	}
-
-	public AlbumData( Album album, String title ) {
+	public AlbumData( Album album, String data ) {
 		this.album = album;
-		this.title = title;
+		this.id = this.album.getId();
+		this.data = data;
 	}
 
 	public long getId() {
@@ -78,42 +53,17 @@ public class AlbumData {
 		this.album = album;
 	}
 
-	public Calendar getCreated() {
-		return created;
+	public String getData() {
+		return data;
 	}
 
-	public void setCreated( Calendar created ) {
-		this.created = created;
-	}
-
-	public Calendar getModified() {
-		return modified;
-	}
-
-	public void setModified( Calendar modified ) {
-		this.modified = modified;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public void setTitle( String title ) {
-		this.title = title;
-	}
-
-	public AlbumContent getAlbumContent() {
-		return albumContent;
-	}
-
-	public void setAlbumContent( AlbumContent albumContent ) {
-		this.albumContent = albumContent;
+	public void setData( String data ) {
+		this.data = data;
 	}
 
 	@Override
 	public String toString() {
-		return "AlbumData [id=" + id + ", album=" + album + ", created=" + created + ", modified=" + modified
-				+ ", title=" + title + ", albumContent=" + albumContent + "]";
+		return "AlbumData [id=" + id + ", album=" + album + ", data=" + data + "]";
 	}
 
 }

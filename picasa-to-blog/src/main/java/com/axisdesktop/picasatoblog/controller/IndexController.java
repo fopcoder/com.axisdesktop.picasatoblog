@@ -149,8 +149,17 @@ public class IndexController {
 	 */
 	private void persistRequest( Record rec ) {
 		// if( dataSource != null ) {
+
+		// Visitor visitor = new Visitor( rec.getVisitor() );
+		// Album album = new Album( visitor, rec.getExternalName(), rec.getExternalId(), rec.getExternalUser(),
+		// rec.getExternalRss(), rec.getAlt() );
+		//
+		// albumService.saveAlbum( album );
+
 		Visitor vis = visitorService.saveVisitor( rec );
-		Album album = albumService.saveAlbum( rec );
+		// System.out.println( vis );
+		Album album = albumService.saveAlbum( vis, rec );
+		// vis.getAlbum().add( album );
 
 		// new Thread( new Runnable() {
 		// @Override

@@ -73,7 +73,7 @@ public class VisitorData {
 
 	@Override
 	public String toString() {
-		return "VisitorData [ip=" + ip + ", visitor=" + visitor + ", created=" + created + "]";
+		return "VisitorData [ip=" + ip + ", visitor_id=" + visitor.getId() + ", created=" + created + "]";
 	}
 
 }
