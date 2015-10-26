@@ -17,6 +17,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
@@ -45,9 +47,15 @@ public class IndexController {
 	private static final int COOKIE_MAX_AGE = 3600 * 24 * 365 * 10;
 	private static final String COOKIE_PATH = "/";
 
+	private static final Logger logger = LoggerFactory.getLogger( IndexController.class );
+
 	// TODO javadoc
 	@RequestMapping( "/" )
 	public String index( PicasaForm picasaForm, HttpServletResponse response, HttpServletRequest request ) {
+
+		logger.debug( "====>" );
+		logger.error( "------>" );
+		logger.info( "+++++>" );
 
 		// TODO fix session auto create in code or wildfly
 		// in case that session was not created
