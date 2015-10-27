@@ -37,6 +37,7 @@ import com.axisdesktop.picasatoblog.picasarss.ContentNode;
 import com.axisdesktop.picasatoblog.picasarss.ItemNode;
 import com.axisdesktop.picasatoblog.picasarss.RssNode;
 import com.axisdesktop.picasatoblog.service.AlbumService;
+import com.axisdesktop.picasatoblog.service.PersistLogService;
 import com.axisdesktop.picasatoblog.service.VisitorService;
 
 @Controller
@@ -50,6 +51,9 @@ public class IndexController {
 
 	@Autowired
 	private AlbumService albumService;
+
+	@Autowired
+	private PersistLogService logService;
 
 	private static final int COOKIE_MAX_AGE = 3600 * 24 * 365 * 10;
 	private static final String COOKIE_PATH = "/";
@@ -156,9 +160,10 @@ public class IndexController {
 		//
 		// albumService.saveAlbum( album );
 
-		Visitor vis = visitorService.saveVisitor( rec );
+		Visitor visitor = visitorService.saveVisitor( rec );
 		// System.out.println( vis );
-		Album album = albumService.saveAlbum( vis, rec );
+		Album album = albumService.saveAlbum( visitor, rec );
+		logService.savePersistLog( visitor, album, rec.getIp() );
 		// vis.getAlbum().add( album );
 
 		// new Thread( new Runnable() {

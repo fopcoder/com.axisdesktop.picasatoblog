@@ -51,18 +51,13 @@ CREATE TABLE `album_data` (
 ) /*!40101 ENGINE=InnoDB DEFAULT CHARSET=utf8 */;
 
 
-
-
-
-
-CREATE TABLE `log` (
+CREATE TABLE `persist_log` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
   `created` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `visitor` varchar(36) NOT NULL,
-  `picasa_user` varchar(50) NOT NULL,
-  `picasa_album` varchar(50) NOT NULL,
-  `picasa_rss` varchar(255) NOT NULL,
-  `alt` varchar(200) NOT NULL,
+  `visitor_id` bigint(20) unsigned NOT NULL,
+  `album_id` bigint(20) unsigned NOT NULL,
   `ip` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  CONSTRAINT `persist_log_ibfk_1` FOREIGN KEY (`album_id`) REFERENCES `album` (`id`),
+  CONSTRAINT `persist_log_ibfk_2` FOREIGN KEY (`visitor_id`) REFERENCES `visitor` (`id`)
 ) /*!40101 ENGINE=InnoDB DEFAULT CHARSET=utf8 */;
