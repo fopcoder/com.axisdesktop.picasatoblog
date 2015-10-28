@@ -152,32 +152,14 @@ public class IndexController {
 	 * @see Record
 	 */
 	private void persistRequest( Record rec ) {
-		// if( dataSource != null ) {
-
-		// Visitor visitor = new Visitor( rec.getVisitor() );
-		// Album album = new Album( visitor, rec.getExternalName(), rec.getExternalId(), rec.getExternalUser(),
-		// rec.getExternalRss(), rec.getAlt() );
-		//
-		// albumService.saveAlbum( album );
-
-		Visitor visitor = visitorService.saveVisitor( rec );
-		// System.out.println( vis );
-		Album album = albumService.saveAlbum( visitor, rec );
-		logService.savePersistLog( visitor, album, rec.getIp() );
-		// vis.getAlbum().add( album );
-
-		// new Thread( new Runnable() {
-		// @Override
-		// public void run() {
-		// BeanPropertySqlParameterSource data = new BeanPropertySqlParameterSource( rec );
-		// Number newId = new SimpleJdbcInsert( dataSource ).withTableName( "record" )
-		// .usingGeneratedKeyColumns( "id", "created" ).executeAndReturnKey( data );
-		//
-		// rec.setId( (long)newId );
-		//
-		// }
-		// } ).start();
-		// }
+		new Thread( new Runnable() {
+			@Override
+			public void run() {
+				Visitor visitor = visitorService.saveVisitor( rec );
+				Album album = albumService.saveAlbum( visitor, rec );
+				logService.savePersistLog( visitor, album, rec.getIp() );
+			}
+		} ).start();
 	}
 
 	/**
