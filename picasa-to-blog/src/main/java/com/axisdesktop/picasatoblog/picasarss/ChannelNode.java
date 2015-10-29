@@ -1,4 +1,4 @@
-package com.axisdesktop.picasatoblog.model;
+package com.axisdesktop.picasatoblog.picasarss;
 
 import java.util.List;
 
@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement( name = "channel" )
 @XmlAccessorType( XmlAccessType.FIELD )
 public class ChannelNode {
+	@XmlElement( name = "title" )
 	private String title;
 
 	@XmlElement( name = "item" )

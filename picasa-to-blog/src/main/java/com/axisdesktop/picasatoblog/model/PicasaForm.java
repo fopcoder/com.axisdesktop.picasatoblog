@@ -20,6 +20,8 @@ public class PicasaForm {
 	@Min( 200 )
 	private int height = 512;
 
+	private String title;
+
 	public String getUrl() {
 		return url;
 	}
@@ -50,6 +52,14 @@ public class PicasaForm {
 
 	public void setHeight( int height ) {
 		this.height = height;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle( String title ) {
+		this.title = title;
 	}
 
 }
