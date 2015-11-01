@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body th:fragment="navbar">
+<nav class="navbar navbar-default ">
+	<div class="containef-fluid">
+		<div class="navbar-header"><a th:href="@{/}" class="navbar-brand">Home</a></div>
+		<div>
+			<ul class="nav navbar-nav">
+				<li><a th:href="@{/feedback}"><span class="glyphicon glyphicon-envelope"></span> Feedback</a></li>
+			</ul>
+		</div>
+	</div>
+</nav>
+</body>
+</html>

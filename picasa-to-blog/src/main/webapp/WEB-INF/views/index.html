@@ -5,9 +5,8 @@
 </head>
 <body >
 	<div class="container">
-		
+		<th:block th:include="include/navbar :: navbar" />
 		<h1 class="page-header">Picasa to blog <small>{ prepare your Picasa album for blog post }</small></h1>
-			
 		<div th:if="${globalError}" th:text="${globalError}" class="alert alert-danger row"></div>
 
 		<div class="row">

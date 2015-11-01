@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:with="devEnv = ${#arrays.contains(@environment.getActiveProfiles(),'development')}">
+<head>
+	<th:block th:include="include/meta :: meta" />
+</head>
+<body >
+	<div class="container">
+		<th:block th:include="include/navbar :: navbar" />
+
+		<h1 class="page-header">Picasa to blog <small>{ prepare your Picasa album for blog post }</small></h1>
+		<div th:if="${globalError}" th:text="${globalError}" class="alert alert-danger row"></div>
+
+		<div class="row">
+			<div class="col-sm-8">
+				<form role="form" th:action="${devEnv} ? @{/getrss} : @{~/getrss}" method="POST" th:object="${picasaForm}" class="form-horizontal">
+					<div class="form-group form-group-sm">
+						<label class="control-label col-sm-3" for="url">Album's RSS URL:</label> 
+						<div class="col-sm-9">
+							<input class="form-control" type="text" name="url" id="url" th:field="*{url}" /> 
+							<div class="alert alert-danger" th:if="${#fields.hasErrors('url')}" th:errors="*{url}"></div>
+						</div>
+					</div>
+					<div class="form-group form-group-sm">
+						<label class="control-label col-sm-3" for="alt">ALT image attribute:</label>
+						<div class="col-sm-9">
+							<input class="form-control" type="text" name="alt" id="alt"  th:field="*{alt}" />
+						</div>
+					</div>
+					<div class="form-group form-group-sm">
+						<label class="control-label col-sm-3" for="width">Image max width:</label> 
+						<div class="col-sm-9">
+							<input class="form-control" type="number" name="width" id="width"  th:field="*{width}" /> 
+							<div class="alert alert-danger" th:if="${#fields.hasErrors('width')}" th:errors="*{width}"></div>
+						</div>
+					</div>
+					<div class="form-group form-group-sm">
+						<label class="control-label col-sm-3" for="height">Image max height:</label>
+						<div class="col-sm-9">
+							<input class="form-control" type="number" name="height" id="height" th:field="*{height}" /> 
+							<div class="alert alert-danger" th:if="${#fields.hasErrors('height')}" th:errors="*{height}"></div>
+						</div>
+					</div>
+					<div class="form-group form-group-sm">
+						<div class="text-center">
+							<button type="submit" class="btn btn-default">Submit</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="col-sm-4 well well-lg">
+				<ul>
+				<!-- 
+					<li>Wildfly + nginx</li>
+					<li>Bootstrap, CKEditor, JQuery</li>
+					<li>SpringMVC, JAXB, Thymeleaf, Maven</li>
+				 -->
+					<li><a
+						href="https://picasaweb.google.com/data/feed/base/user/116527897062235241340/albumid/6056342117227115201?alt=rss&amp;kind=photo&amp;hl=uk"
+						target="sampleurl">Example RSS</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

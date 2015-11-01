@@ -1,9 +1,13 @@
 package com.axisdesktop.picasatoblog.config;
 
+import java.util.Arrays;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -18,6 +22,10 @@ import org.thymeleaf.templateresolver.TemplateResolver;
 @ComponentScan( "com.axisdesktop.picasatoblog" )
 @PropertySource( "classpath:application.properties" )
 public class AppConfig extends WebMvcConfigurerAdapter {
+
+	@Autowired
+	private Environment environment;
+
 	@Bean
 	public TemplateResolver templateResolver() {
 		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver();
@@ -25,6 +33,10 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 		templateResolver.setSuffix( ".html" );
 		templateResolver.setCharacterEncoding( "UTF-8" );
 		templateResolver.setTemplateMode( "HTML5" );
+
+		if( Arrays.asList( environment.getActiveProfiles() ).contains( "development" ) ) {
+			templateResolver.setCacheable( false );
+		}
 
 		return templateResolver;
 	}

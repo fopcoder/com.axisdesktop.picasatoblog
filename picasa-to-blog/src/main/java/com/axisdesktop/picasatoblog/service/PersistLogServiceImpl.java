@@ -2,6 +2,7 @@ package com.axisdesktop.picasatoblog.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.axisdesktop.picasatoblog.entity.Album;
 import com.axisdesktop.picasatoblog.entity.PersistLog;
@@ -14,6 +15,7 @@ public class PersistLogServiceImpl implements PersistLogService {
 	private PersistLogRepository logRepo;
 
 	@Override
+	@Transactional
 	public PersistLog savePersistLog( Visitor visitor, Album album, String ip ) {
 		return logRepo.save( new PersistLog( visitor, album, ip ) );
 	}

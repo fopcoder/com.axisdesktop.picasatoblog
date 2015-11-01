@@ -60,9 +60,6 @@ public class IndexController {
 	@Autowired
 	private PersistLogService logService;
 
-	@Resource( mappedName = "java:/mail/gmail" )
-	private Session mailSession;
-
 	private static final int COOKIE_MAX_AGE = 3600 * 24 * 365 * 10;
 	private static final String COOKIE_PATH = "/";
 
