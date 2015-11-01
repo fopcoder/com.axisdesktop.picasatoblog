@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.annotation.Resource;
+import javax.mail.Session;
+import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -57,10 +60,16 @@ public class IndexController {
 	@Autowired
 	private PersistLogService logService;
 
+	@Resource( mappedName = "java:/mail/gmail" )
+	private Session mailSession;
+
 	private static final int COOKIE_MAX_AGE = 3600 * 24 * 365 * 10;
 	private static final String COOKIE_PATH = "/";
 
 	private static final Logger logger = LoggerFactory.getLogger( IndexController.class );
+
+	@Autowired
+	private ServletContext appContext;
 
 	// TODO javadoc
 	@RequestMapping( "/" )
@@ -69,6 +78,8 @@ public class IndexController {
 		logger.debug( "====>" );
 		logger.error( "------>" );
 		logger.info( "+++++>" );
+
+		// System.out.println( appContext.g );
 
 		// TODO fix session auto create in code or wildfly
 		// in case that session was not created
@@ -300,4 +311,26 @@ public class IndexController {
 
 		return url;
 	}
+
+	// private void sendEmail() {
+	// try {
+	//
+	// MimeMessage m = new MimeMessage( mailSession );
+	// Address from = new InternetAddress( "report@axisdesltop.com" );
+	// Address[] to = new InternetAddress[] { new InternetAddress( "barabass@gmail.com" ) };
+	//
+	// m.setFrom( from );
+	// m.setRecipients( Message.RecipientType.TO, to );
+	// m.setSubject( "JBoss AS 7 Mail" );
+	// m.setSentDate( new java.util.Date() );
+	// m.setContent( "Mail sent from JBoss AS 7", "text/plain" );
+	// Transport.send( m );
+	// System.out.println( "Mail sent!" );
+	// }
+	// catch( javax.mail.MessagingException e ) {
+	// e.printStackTrace();
+	// System.out.println( "Error in Sending Mail: " + e );
+	// }
+	// }
+
 }
