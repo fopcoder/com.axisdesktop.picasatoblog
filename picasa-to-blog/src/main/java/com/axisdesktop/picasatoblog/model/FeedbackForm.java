@@ -1,8 +1,15 @@
 package com.axisdesktop.picasatoblog.model;
 
+import javax.validation.constraints.Size;
+
 public class FeedbackForm {
+
+	@Size( min = 1, max = 100 )
 	private String name;
+
 	private String email;
+
+	@Size( min = 10, max = 1000 )
 	private String message;
 
 	public FeedbackForm() {

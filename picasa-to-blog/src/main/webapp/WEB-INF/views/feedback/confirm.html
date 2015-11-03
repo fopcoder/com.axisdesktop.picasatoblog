@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:with="devEnv = ${#arrays.contains(@environment.getActiveProfiles(),'development')}">
+<head>
+	<title>Confirmation</title>
+	<th:block th:include="include/meta :: meta" />
+</head>
+<body >
+	<div class="container">
+		<th:block th:include="include/navbar :: navbar" />
+
+		<h1 class="page-header">Confirmation</h1>
+		 
+		<div class="row" th:object="${feedbackForm}">
+			<div class="col-sm-12">Your message has been successfully sent</div>
+			<div class="col-sm-12">
+				<div class="col-sm-3">Name:</div> 
+				<div class="col-sm-9" th:text="*{name}"></div>
+			</div>
+			<div class="col-sm-12">
+				<div class="col-sm-3">Email:</div>
+				<div class="col-sm-9" th:text="*{email}"></div>
+			</div>
+			<div class="col-sm-12">
+				<div class="col-sm-3">Message:</div>
+				<div class="col-sm-9" th:text="*{message}"></div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

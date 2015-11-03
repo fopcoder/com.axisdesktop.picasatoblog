@@ -11,8 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.annotation.Resource;
-import javax.mail.Session;
 import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -308,26 +306,5 @@ public class IndexController {
 
 		return url;
 	}
-
-	// private void sendEmail() {
-	// try {
-	//
-	// MimeMessage m = new MimeMessage( mailSession );
-	// Address from = new InternetAddress( "report@axisdesltop.com" );
-	// Address[] to = new InternetAddress[] { new InternetAddress( "barabass@gmail.com" ) };
-	//
-	// m.setFrom( from );
-	// m.setRecipients( Message.RecipientType.TO, to );
-	// m.setSubject( "JBoss AS 7 Mail" );
-	// m.setSentDate( new java.util.Date() );
-	// m.setContent( "Mail sent from JBoss AS 7", "text/plain" );
-	// Transport.send( m );
-	// System.out.println( "Mail sent!" );
-	// }
-	// catch( javax.mail.MessagingException e ) {
-	// e.printStackTrace();
-	// System.out.println( "Error in Sending Mail: " + e );
-	// }
-	// }
 
 }
