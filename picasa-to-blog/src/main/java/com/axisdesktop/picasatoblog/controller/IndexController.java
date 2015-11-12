@@ -70,9 +70,9 @@ public class IndexController {
 	@RequestMapping( "/" )
 	public String index( PicasaForm picasaForm, HttpServletResponse response, HttpServletRequest request ) {
 
-		logger.debug( "====>" );
-		logger.error( "------>" );
-		logger.info( "+++++>" );
+		// logger.debug( "====>" );
+		// logger.error( "------>" );
+		// logger.info( "+++++>" );
 
 		// System.out.println( appContext.g );
 
