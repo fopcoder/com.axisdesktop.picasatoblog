@@ -1,5 +1,7 @@
 package com.axisdesktop.picasatoblog.controller;
 
+import java.util.Locale;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +26,7 @@ public class FeedbackController {
 	}
 
 	@RequestMapping( value = "/send", method = RequestMethod.POST )
-	public String send( @Valid FeedbackForm feedbackForm, BindingResult bindingResult, RedirectAttributes redirectAttr ) {
+	public String send( @Valid FeedbackForm feedbackForm, BindingResult bindingResult, RedirectAttributes redirectAttr, Locale locale ) {
 		if( bindingResult.hasErrors() ) {
 			return "feedback/index";
 		}

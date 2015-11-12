@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title th:remove="all">Template for HTML email with inline image</title>
+<meta charset="UTF-8" />
+</head>
+<body>
+	<div th:object="${data}">
+		<p th:inline="text">Name : [[*{name}]]</p>
+		<p th:inline="text">Email : [[*{email}]]</p>
+		<p th:inline="text">Name : [[*{message}]]</p>
+	</div>
+</body>
+</html>

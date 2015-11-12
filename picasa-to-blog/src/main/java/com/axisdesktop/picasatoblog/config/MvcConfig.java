@@ -13,6 +13,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.thymeleaf.spring4.SpringTemplateEngine;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 import org.thymeleaf.templateresolver.TemplateResolver;
 
@@ -24,12 +25,24 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 	private Environment environment;
 
 	@Bean
-	public TemplateResolver templateResolver() {
+	public TemplateResolver emailTemplateResolver() {
+		TemplateResolver templateResolver = new ClassLoaderTemplateResolver();
+		templateResolver.setPrefix( "/mail/" );
+		templateResolver.setSuffix( ".html" );
+		templateResolver.setCharacterEncoding( "UTF-8" );
+		templateResolver.setTemplateMode( "HTML5" );
+		templateResolver.setOrder( 1 );
+		return templateResolver;
+	}
+
+	@Bean
+	public TemplateResolver webTemplateResolver() {
 		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver();
 		templateResolver.setPrefix( "/WEB-INF/views/" );
 		templateResolver.setSuffix( ".html" );
 		templateResolver.setCharacterEncoding( "UTF-8" );
 		templateResolver.setTemplateMode( "HTML5" );
+		templateResolver.setOrder( 2 );
 
 		if( Arrays.asList( environment.getActiveProfiles() ).contains( "development" ) ) {
 			templateResolver.setCacheable( false );
@@ -41,7 +54,8 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 	@Bean
 	public SpringTemplateEngine templateEngine() {
 		SpringTemplateEngine templateEngine = new SpringTemplateEngine();
-		templateEngine.setTemplateResolver( templateResolver() );
+		templateEngine.addTemplateResolver( emailTemplateResolver() );
+		templateEngine.addTemplateResolver( webTemplateResolver() );
 
 		return templateEngine;
 	}
