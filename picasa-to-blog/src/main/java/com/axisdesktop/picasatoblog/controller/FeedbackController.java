@@ -20,13 +20,14 @@ public class FeedbackController {
 	@Autowired
 	private FeedbackService feedbackService;
 
-	@RequestMapping( value = { "", "/" } )
+	@RequestMapping( path = { "", "/" } )
 	public String index( FeedbackForm feedbackForm ) {
 		return "feedback/index";
 	}
 
-	@RequestMapping( value = "/send", method = RequestMethod.POST )
-	public String send( @Valid FeedbackForm feedbackForm, BindingResult bindingResult, RedirectAttributes redirectAttr, Locale locale ) {
+	@RequestMapping( path = "/send", method = RequestMethod.POST )
+	public String send( @Valid FeedbackForm feedbackForm, BindingResult bindingResult, RedirectAttributes redirectAttr,
+			Locale locale ) {
 		if( bindingResult.hasErrors() ) {
 			return "feedback/index";
 		}
