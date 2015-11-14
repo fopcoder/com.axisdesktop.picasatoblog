@@ -28,6 +28,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 	@Override
 	public void sendFeedback( FeedbackForm feedbackForm ) {
 		try {
+			if( mailSender == null ) throw new NullPointerException( "mailSender is null" );
 
 			Context ctx = new Context();
 			ctx.setVariable( "data", feedbackForm );
@@ -44,7 +45,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 			mailSender.send( message );
 			System.out.println( "Mail sent!" );
 		}
-		catch( javax.mail.MessagingException e ) {
+		catch( Exception e ) {
 			e.printStackTrace();
 			System.out.println( "Error in Sending Mail: " + e );
 		}

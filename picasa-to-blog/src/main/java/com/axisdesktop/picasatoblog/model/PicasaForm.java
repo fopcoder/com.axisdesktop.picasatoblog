@@ -62,4 +62,10 @@ public class PicasaForm {
 		this.title = title;
 	}
 
+	@Override
+	public String toString() {
+		return "PicasaForm [url=" + url + ", alt=" + alt + ", width=" + width + ", height=" + height + ", title="
+				+ title + "]";
+	}
+
 }

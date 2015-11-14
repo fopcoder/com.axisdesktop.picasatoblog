@@ -5,8 +5,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -20,15 +18,13 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.axisdesktop.picasatoblog.entity.Album;
@@ -40,14 +36,13 @@ import com.axisdesktop.picasatoblog.picasarss.ContentNode;
 import com.axisdesktop.picasatoblog.picasarss.ItemNode;
 import com.axisdesktop.picasatoblog.picasarss.RssNode;
 import com.axisdesktop.picasatoblog.service.AlbumService;
+import com.axisdesktop.picasatoblog.service.HelperService;
 import com.axisdesktop.picasatoblog.service.PersistLogService;
 import com.axisdesktop.picasatoblog.service.VisitorService;
 
 @Controller
+@SessionAttributes( "images" )
 public class IndexController {
-
-	@Autowired
-	private Environment environment;
 
 	@Autowired
 	private VisitorService visitorService;
@@ -56,12 +51,15 @@ public class IndexController {
 	private AlbumService albumService;
 
 	@Autowired
-	private PersistLogService logService;
+	private PersistLogService dblogService;
+
+	@Autowired
+	private HelperService helperService;
 
 	private static final int COOKIE_MAX_AGE = 3600 * 24 * 365 * 10;
 	private static final String COOKIE_PATH = "/";
 
-	private static final Logger logger = LoggerFactory.getLogger( IndexController.class );
+	// private static final Logger logger = LoggerFactory.getLogger( IndexController.class );
 
 	@Autowired
 	private ServletContext appContext;
@@ -70,17 +68,11 @@ public class IndexController {
 	@RequestMapping( "/" )
 	public String index( PicasaForm picasaForm, HttpServletResponse response, HttpServletRequest request ) {
 
-		// logger.debug( "====>" );
-		// logger.error( "------>" );
-		// logger.info( "+++++>" );
-
-		// System.out.println( appContext.g );
-
 		// TODO fix session auto create in code or wildfly
 		// in case that session was not created
 		request.getSession( true );
 
-		Map<String, String> cookies = getCookies( request.getCookies() );
+		Map<String, String> cookies = helperService.getCookies( request.getCookies() );
 
 		if( !cookies.containsKey( "visitor" ) ) {
 			Cookie c = new Cookie( "visitor", UUID.randomUUID().toString() );
@@ -98,7 +90,7 @@ public class IndexController {
 			picasaForm.setHeight( Integer.valueOf( cookies.get( "h" ) ) );
 		}
 
-		return "index";
+		return "/index";
 	}
 
 	// TODO javadoc
@@ -106,7 +98,7 @@ public class IndexController {
 	public String getRss( @Valid PicasaForm picasaForm, BindingResult bindingResult, Model model,
 			RedirectAttributes redirectAttr, HttpServletResponse response, HttpServletRequest request ) {
 		if( bindingResult.hasErrors() ) {
-			return "index";
+			return "/index";
 		}
 
 		redirectAttr.addFlashAttribute( "picasaForm", picasaForm );
@@ -128,11 +120,11 @@ public class IndexController {
 
 			Record rec = new Record();
 			picasaRssGetUrlParams( picasaForm.getUrl(), rec );
-			rec.setIp( getIpAddress( request ) );
+			rec.setIp( helperService.getIpAddress( request ) );
 			rec.setAlt( picasaForm.getAlt() );
 			rec.setExternalName( picasaForm.getTitle() );
 
-			Map<String, String> cookies = getCookies( request.getCookies() );
+			Map<String, String> cookies = helperService.getCookies( request.getCookies() );
 			rec.setVisitor( cookies.get( "visitor" ) );
 
 			persistRequest( rec );
@@ -140,11 +132,11 @@ public class IndexController {
 		}
 		catch( MalformedURLException e ) {
 			model.addAttribute( "globalError", "MalformedURLException: " + picasaForm.getUrl() );
-			return "index";
+			return "/index";
 		}
 		catch( JAXBException e ) {
 			model.addAttribute( "globalError", "JAXBException: " + e );
-			return "index";
+			return "/index";
 		}
 		catch( Exception e ) {
 			e.printStackTrace();
@@ -153,7 +145,9 @@ public class IndexController {
 
 		// TODO fix session auto create in wildfly
 
-		return "redirect:" + composeIndexRedirectUrl( request );
+		System.out.println( helperService.composeRedirectURI( request ) );
+
+		return "redirect:" + helperService.composeRedirectURI( request );
 	}
 
 	/**
@@ -171,7 +165,7 @@ public class IndexController {
 			public void run() {
 				Visitor visitor = visitorService.saveVisitor( rec );
 				Album album = albumService.saveAlbum( visitor, rec );
-				logService.savePersistLog( visitor, album, rec.getIp() );
+				dblogService.savePersistLog( visitor, album, rec.getIp() );
 			}
 		} ).start();
 	}
@@ -249,62 +243,6 @@ public class IndexController {
 		}
 
 		return images;
-	}
-
-	/**
-	 * Gets client IP address
-	 * 
-	 * @param request
-	 *        HttpServletRequest
-	 * @return String IP
-	 */
-	private String getIpAddress( HttpServletRequest request ) {
-		String ip = request.getHeader( "X-FORWARDED-FOR" );
-
-		if( ip == null ) {
-			ip = request.getRemoteAddr();
-		}
-
-		return ip;
-	}
-
-	/**
-	 * Converts HTTP Cookies to HashMap<String, String>
-	 * 
-	 * @param cookie
-	 *        array of HttpServletRequest Cookies
-	 * @return HashMap<Key, Value>
-	 */
-	private Map<String, String> getCookies( Cookie[] cookie ) {
-		Map<String, String> cm = new HashMap<>();
-
-		if( cookie != null ) {
-			for( Cookie c : cookie ) {
-				cm.put( c.getName(), c.getValue() );
-			}
-		}
-
-		return cm;
-	}
-
-	/**
-	 * Composes String url for redirect after form submit
-	 * 
-	 * @param request
-	 *        HttpServletRequest
-	 * @return url as string
-	 */
-	private String composeIndexRedirectUrl( HttpServletRequest request ) {
-		String url = null;
-
-		if( Arrays.asList( environment.getActiveProfiles() ).contains( "development" ) ) {
-			url = "/";
-		}
-		else {
-			url = request.getScheme() + "://" + request.getServerName();
-		}
-
-		return url;
 	}
 
 }
