@@ -139,7 +139,7 @@ public class IndexController {
 
 		// TODO fix session auto create in wildfly
 
-		return "redirect:" + composeIndexRedirectUrl( request );
+		return "redirect:/";// + composeIndexRedirectUrl( request );
 	}
 
 	/**
