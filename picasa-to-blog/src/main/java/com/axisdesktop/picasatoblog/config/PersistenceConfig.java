@@ -42,11 +42,11 @@ public class PersistenceConfig {
 		return db;
 	}
 
-	@Profile( "development" )
-	@Bean( initMethod = "start", destroyMethod = "stop" )
-	public Server startDBManager() throws SQLException {
-		return Server.createWebServer();
-	}
+	// @Profile( "development" )
+	// @Bean( initMethod = "start", destroyMethod = "stop" )
+	// public Server startDBManager() throws SQLException {
+	// return Server.createWebServer();
+	// }
 
 	@Profile( "production" )
 	@Bean( name = "dataSource" )

@@ -2,8 +2,9 @@
 <jboss-web>
     <session-config>
         <cookie-config>
-            
             <path>/</path>
         </cookie-config>
     </session-config>
+    <context-root>/</context-root>
+    <virtual-host>picasa-to-blog</virtual-host>
 </jboss-web>

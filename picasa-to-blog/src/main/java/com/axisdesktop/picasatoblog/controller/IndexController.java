@@ -145,9 +145,9 @@ public class IndexController {
 
 		// TODO fix session auto create in wildfly
 
-		System.out.println( helperService.composeRedirectURI( request ) );
+		// System.out.println( helperService.composeRedirectURI( request ) );
 
-		return "redirect:" + helperService.composeRedirectURI( request );
+		return "redirect:/";// + helperService.composeRedirectURI( request );
 	}
 
 	/**
