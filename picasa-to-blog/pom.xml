@@ -9,7 +9,7 @@
 		<java.version>1.8</java.version>
 		<servlet-api.version>3.1.0</servlet-api.version>
 		<validation-api.version>1.1.0.Final</validation-api.version>
-		<spring.version>4.2.1.RELEASE</spring.version>
+		<spring.version>4.2.2.RELEASE</spring.version>
 		<spring-jpa.version>1.8.2.RELEASE</spring-jpa.version>
 		<thymeleaf.version>2.1.4.RELEASE</thymeleaf.version>
 		<h2.version>1.4.187</h2.version>
@@ -23,6 +23,14 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -95,10 +103,7 @@
 			<artifactId>javax.mail</artifactId>
 			<version>1.5.1</version>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context-support</artifactId>
-		</dependency>
+		
 	</dependencies>
 	
 	<dependencyManagement>
