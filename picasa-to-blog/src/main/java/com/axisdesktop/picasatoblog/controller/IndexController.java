@@ -5,7 +5,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,7 +63,7 @@ public class IndexController {
 
 		// TODO fix session auto create in code or wildfly
 		// in case that session was not created
-		request.getSession( true );
+		// request.getSession( true );
 
 		Map<String, String> cookies = getCookies( request.getCookies() );
 
@@ -137,9 +136,7 @@ public class IndexController {
 			// TODO log all other exception
 		}
 
-		// TODO fix session auto create in wildfly
-
-		return "redirect:/";// + composeIndexRedirectUrl( request );
+		return "redirect:/";
 	}
 
 	/**
@@ -273,23 +270,4 @@ public class IndexController {
 		return cm;
 	}
 
-	/**
-	 * Composes String url for redirect after form submit
-	 * 
-	 * @param request
-	 *        HttpServletRequest
-	 * @return url as string
-	 */
-	private String composeIndexRedirectUrl( HttpServletRequest request ) {
-		String url = null;
-
-		if( Arrays.asList( environment.getActiveProfiles() ).contains( "development" ) ) {
-			url = "/";
-		}
-		else {
-			url = request.getScheme() + "://" + request.getServerName();
-		}
-
-		return url;
-	}
 }
