@@ -1,6 +1,5 @@
 package com.axisdesktop.picasatoblog.controller;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,8 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.SessionAttributes;
-import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.axisdesktop.picasatoblog.model.FeedbackForm;
 import com.axisdesktop.picasatoblog.service.FeedbackService;
@@ -18,7 +16,6 @@ import com.axisdesktop.picasatoblog.service.HelperService;
 
 @Controller
 @RequestMapping( "/feedback" )
-@SessionAttributes( "feedbackForm" )
 public class FeedbackController {
 
 	@Autowired
@@ -33,10 +30,12 @@ public class FeedbackController {
 	}
 
 	@RequestMapping( path = "/send", method = RequestMethod.POST )
-	public String send( @Valid FeedbackForm feedbackForm, BindingResult bindingResult, HttpServletRequest request ) {
+	public String send( @Valid FeedbackForm feedbackForm, BindingResult bindingResult, RedirectAttributes redirectAttr ) {
 		if( bindingResult.hasErrors() ) {
 			return "/feedback/index";
 		}
+
+		redirectAttr.addFlashAttribute( "feedbackForm", feedbackForm );
 
 		// don't wait when feedback will sent
 		new Thread( new Runnable() {
@@ -47,17 +46,15 @@ public class FeedbackController {
 			}
 		} ).start();
 
-		return "redirect:" + helperService.composeRedirectURI( request, "/feedback/confirm" );
+		return "redirect:/feedback/confirm";
 	}
 
 	@RequestMapping( "/confirm" )
-	public String sent( SessionStatus status, Model model, HttpServletRequest req ) {
-		// do not show empty confirmation page
+	public String sent( Model model ) {
+		// don't show empty confirmation page
 		if( !model.containsAttribute( "feedbackForm" ) ) {
-			return "redirect:" + helperService.composeRedirectURI( req, "/feedback" );
+			return "redirect:/feedback";
 		}
-
-		status.setComplete(); // clean session attributes
 
 		return "/feedback/confirm";
 	}

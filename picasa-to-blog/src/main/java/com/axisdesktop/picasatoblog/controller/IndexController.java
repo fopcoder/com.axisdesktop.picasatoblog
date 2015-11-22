@@ -24,7 +24,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.SessionAttributes;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.axisdesktop.picasatoblog.entity.Album;
@@ -41,7 +40,6 @@ import com.axisdesktop.picasatoblog.service.PersistLogService;
 import com.axisdesktop.picasatoblog.service.VisitorService;
 
 @Controller
-@SessionAttributes( "images" )
 public class IndexController {
 
 	@Autowired
@@ -67,10 +65,6 @@ public class IndexController {
 	// TODO javadoc
 	@RequestMapping( "/" )
 	public String index( PicasaForm picasaForm, HttpServletResponse response, HttpServletRequest request ) {
-
-		// TODO fix session auto create in code or wildfly
-		// in case that session was not created
-		request.getSession( true );
 
 		Map<String, String> cookies = helperService.getCookies( request.getCookies() );
 
@@ -143,11 +137,8 @@ public class IndexController {
 			// TODO log all other exception
 		}
 
-		// TODO fix session auto create in wildfly
+		return "redirect:/";
 
-		// System.out.println( helperService.composeRedirectURI( request ) );
-
-		return "redirect:/";// + helperService.composeRedirectURI( request );
 	}
 
 	/**
@@ -244,5 +235,4 @@ public class IndexController {
 
 		return images;
 	}
-
 }

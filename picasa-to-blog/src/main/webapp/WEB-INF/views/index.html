@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:with="devEnv = ${#arrays.contains(@environment.getActiveProfiles(),'development')}">
 <head>
+	<title>Picasa To Blog</title>
+	<meta name="description" content="This application will help you to prepare your Google Picasa album for blog post"/>
+	
 	<th:block th:include="include/meta :: meta" />
 </head>
 <body >
@@ -11,7 +14,7 @@
 
 		<div class="row">
 			<div class="col-sm-8">
-				<form role="form" th:action="${devEnv} ? @{/getrss} : @{~/getrss}" method="POST" th:object="${picasaForm}" class="form-horizontal">
+				<form role="form" th:action="@{/getrss}" method="POST" th:object="${picasaForm}" class="form-horizontal">
 					<div class="form-group form-group-sm">
 						<label class="control-label col-sm-3" for="url">Album's RSS URL:</label> 
 						<div class="col-sm-9">
@@ -47,11 +50,8 @@
 				</form>
 			</div>
 			<div class="col-sm-4 well well-lg">
-				<ul>
-					<li><a
-						href="https://picasaweb.google.com/data/feed/base/user/116527897062235241340/albumid/6056342117227115201?alt=rss&amp;kind=photo&amp;hl=uk"
-						target="sampleurl">Example RSS</a></li>
-				</ul>
+				You can use this <a href="https://picasaweb.google.com/data/feed/base/user/116527897062235241340/albumid/6056342117227115201?alt=rss&amp;kind=photo&amp;hl=uk"
+						target="sampleurl">Picasa RSS</a> for test purposes.
 			</div>
 		</div>
 

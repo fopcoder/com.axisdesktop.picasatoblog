@@ -13,7 +13,7 @@
 
 		<div class="row">
 			<div class="col-sm-8">
-				<form role="form" th:action="${devEnv} ? @{/feedback/send} : @{~/feedback/send}" method="POST" th:object="${feedbackForm}" class="form-horizontal">
+				<form role="form" th:action="@{/feedback/send}" method="POST" th:object="${feedbackForm}" class="form-horizontal">
 					<div class="form-group form-group-sm">
 						<label class="control-label col-sm-3" for="url">Name:</label> 
 						<div class="col-sm-9">
@@ -40,6 +40,9 @@
 						</div>
 					</div>
 				</form>
+			</div>
+			<div class="col-sm-4 well well-lg">
+				Here you can send me a message. Tell me something interesting!
 			</div>
 		</div>
 	</div>

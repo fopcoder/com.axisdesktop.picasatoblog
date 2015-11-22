@@ -37,7 +37,7 @@ public class FeedbackServiceImpl implements FeedbackService {
 			MimeMessage message = new MimeMessage( mailSender.getSession() );
 			MimeMessageHelper helper = new MimeMessageHelper( message, true, "UTF-8" );
 
-			helper.setSubject( "PicasaToBlog запрос" );
+			helper.setSubject( "PicasaToBlog" );
 			helper.setFrom( environment.getRequiredProperty( "mail.from" ) );
 			helper.setTo( environment.getRequiredProperty( "mail.to" ) );
 			helper.setText( htmlContent, true ); // true = isHtml
