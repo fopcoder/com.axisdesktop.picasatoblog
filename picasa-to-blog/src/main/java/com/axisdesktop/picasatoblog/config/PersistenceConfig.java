@@ -1,11 +1,9 @@
 package com.axisdesktop.picasatoblog.config;
 
-import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.h2.tools.Server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
