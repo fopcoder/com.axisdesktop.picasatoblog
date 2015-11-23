@@ -1,11 +1,11 @@
 package com.axisdesktop.picasatoblog.controller.test;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.junit.matchers.JUnitMatchers.*;
-import static org.junit.Assert.*;
-import static org.junit.Assume.*;
-import static org.hamcrest.CoreMatchers.*;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.cookie;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import javax.servlet.http.Cookie;
 
@@ -57,10 +57,10 @@ public class IndexControllerTest {
 
 	@Test
 	public void getIndexAndExistsWidthCookie() throws Exception {
-		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get( "/" ).cookie( new Cookie( "w", "12345" ) );
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get( "/" ).cookie( new Cookie( "w", "1234" ) );
 
 		mockMvc.perform( request ).andExpect( status().isOk() ).andExpect( view().name( "/index" ) )
-				.andExpect( model().attribute( "picasaForm", hasProperty( "width", hasToString( "12345" ) ) ) );
+				.andExpect( model().attribute( "picasaForm", hasProperty( "width", is( 1234 ) ) ) );
 	}
 
 	@Test
@@ -68,15 +68,15 @@ public class IndexControllerTest {
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get( "/" );
 
 		mockMvc.perform( request ).andExpect( status().isOk() ).andExpect( view().name( "/index" ) )
-				.andExpect( model().attribute( "picasaForm", hasProperty( "width", hasToString( "1024" ) ) ) );
+				.andExpect( model().attribute( "picasaForm", hasProperty( "width", is( 1024 ) ) ) );
 	}
 
 	@Test
 	public void getIndexAndExistsHeightCookie() throws Exception {
-		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get( "/" ).cookie( new Cookie( "h", "567890" ) );
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get( "/" ).cookie( new Cookie( "h", "56789" ) );
 
 		mockMvc.perform( request ).andExpect( status().isOk() ).andExpect( view().name( "/index" ) )
-				.andExpect( model().attribute( "picasaForm", hasProperty( "height", hasToString( "567890" ) ) ) );
+				.andExpect( model().attribute( "picasaForm", hasProperty( "height", is( 56789 ) ) ) );
 	}
 
 	@Test
@@ -84,6 +84,6 @@ public class IndexControllerTest {
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get( "/" );
 
 		mockMvc.perform( request ).andExpect( status().isOk() ).andExpect( view().name( "/index" ) )
-				.andExpect( model().attribute( "picasaForm", hasProperty( "height", hasToString( "512" ) ) ) );
+				.andExpect( model().attribute( "picasaForm", hasProperty( "height", is( 512 ) ) ) );
 	}
 }
