@@ -3,6 +3,7 @@ package com.axisdesktop.picasatoblog.controller;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -58,5 +59,10 @@ public class FeedbackController {
 
 		return "/feedback/confirm";
 	}
+
+	// @Scheduled( fixedDelay = 5000 )
+	// public void doSomething() {
+	// System.out.println( "99999" );
+	// }
 
 }
