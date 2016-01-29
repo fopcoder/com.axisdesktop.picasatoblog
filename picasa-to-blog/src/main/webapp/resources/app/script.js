@@ -35,7 +35,7 @@ $(document).ready(function (){
 			            });
 					}
 		            
-		            this.dataProcessor.writer.lineBreakChars = '\n\n\n\n';
+		            this.dataProcessor.writer.lineBreakChars = '\n\n\n';
 		        }
 		    }
 		} );
