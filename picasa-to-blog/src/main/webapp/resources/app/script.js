@@ -18,6 +18,7 @@ $(document).ready(function (){
 		];
 		CKEDITOR.config.removeButtons = 'Save,Templates,NewPage,Preview,Print,Find,Replace,SelectAll,Scayt,Form,Checkbox,Radio,TextField,Textarea,Select,ImageButton,Button,HiddenField,Subscript,Superscript,Language,BidiLtr,BidiRtl,About,Styles,Format,Font,FontSize,Flash,Smiley,SpecialChar,PageBreak,Iframe,TextColor,BGColor,Maximize,ShowBlocks,Blockquote,CreateDiv,Outdent,Indent,BulletedList,NumberedList,JustifyLeft,JustifyCenter,JustifyRight,JustifyBlock,HorizontalRule';
 		CKEDITOR.config.height = $(document).height()-70;
+		CKEDITOR.config.enterMode = CKEDITOR.ENTER_DIV;
 		
 		CKEDITOR.replace( 'editor', {
 			on: {
@@ -33,6 +34,8 @@ $(document).ready(function (){
 			                breakAfterClose: true
 			            });
 					}
+		            
+		            this.dataProcessor.writer.lineBreakChars = '\n\n\n\n';
 		        }
 		    }
 		} );
